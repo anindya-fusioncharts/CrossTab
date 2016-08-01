@@ -1,0 +1,25 @@
+{
+	"chart":{
+		"type":"crosstab",
+		"titles":"Sum of Sales",
+		"tab_titles":["Central","East","South","West"],
+		"category_name":"Product Type",
+		"Sub_category_name":"Product"
+	},
+	"labels":[
+		{	
+			"category":"Coffee",//,"Expresso","Herbal Tea","Tea"],
+			"sub_category":["Amaretto","Columbian","Decaf Irish Cream","Total"]
+		},
+		{
+			"category":"Espresso",
+			"sub_category":["Caffe Latte","Caffe Mocha","Decaf Espresso","Regular Espresso","Total"]
+		}
+	],
+	"data":[
+		{
+			"Sum of Profit":["$5105","$8528","$9632"],
+			"Sum of Sales":["$14011","$28913","$26155","$69080"]
+		}
+	]
+}

@@ -38,8 +38,10 @@ function countDecimals(value) {
 }
 
 function parseJSON(rawJSON){
-	var noData,keys,flag;
-	var regions=[];
+	var noData,keys,flag,flagC,flagS;
+	var tab_titles=[],
+		categoryList=[],
+		subCategoryList=[];
 	var uniqueKeys=[],
 		DataSet=[];
 	var internalDataStructure={};
@@ -47,7 +49,7 @@ function parseJSON(rawJSON){
 	internalDataStructure.chart={};
 	internalDataStructure.chart.type=chartType=rawJSON.chart.type;	
 
-	if(internalDataStructure.chart.type=='line' || internalDataStructure.chart.type='column'){
+	if(internalDataStructure.chart.type=='line' || internalDataStructure.chart.type=='column'){
 		internalDataStructure.chart.caption=rawJSON.chart.caption || "Caption";
 		internalDataStructure.chart.subCaption=rawJSON.chart.subCaption || "subCaption";
 		internalDataStructure.chart.height=rawJSON.chart.height || 300;		
@@ -107,9 +109,32 @@ function parseJSON(rawJSON){
 		internalDataStructure.chart.numberprefix=rawJSON.chart.numberprefix;
 
 		internalDataStructure.data=[];
-		for(var i=0; i<rawJSON.data.length; i++){
-			rawJSON.data.region;
+		for(var i=0,k=0; i<rawJSON.data.length; i++){
+			flag=0;
+			if(tab_titles[0]== undefined)
+				tab_titles[0]= rawJSON.data[0][internalDataStructure.chart.tab_titles];
+			
+			for(var j=0; j< tab_titles.length; j++){
+				if(tab_titles[j]==rawJSON.data[i][internalDataStructure.chart.tab_titles])
+					flag =1;
+			}			
+			if(flag==0){
+				tab_titles[j]=rawJSON.data[i][internalDataStructure.chart.tab_titles];
+			}
+
+			flagC=0;
+			if(categoryList[0]== undefined)
+				categoryList[0]= rawJSON.data[0].category;
+			for(var j=0; j<categoryList.length; j++){
+				if(categoryList[j]==rawJSON.data[i].category)
+					flagC=1;
+			}
+			
 		}
+		internalDataStructure.chart.tab_titlesList=[];
+		internalDataStructure.chart.tab_titlesList=tab_titles;
+		
+		
 
 	}
 	return internalDataStructure;

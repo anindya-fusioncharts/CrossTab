@@ -39,62 +39,79 @@ function countDecimals(value) {
 
 function parseJSON(rawJSON){
 	var noData,keys,flag;
+	var regions=[];
 	var uniqueKeys=[],
 		DataSet=[];
 	var internalDataStructure={};
 
 	internalDataStructure.chart={};
-	internalDataStructure.chart.caption=rawJSON.chart.caption || "Caption";
-	internalDataStructure.chart.subCaption=rawJSON.chart.subCaption || "subCaption";
-	internalDataStructure.chart.height=rawJSON.chart.height || 300;		
-	internalDataStructure.chart.height=(internalDataStructure.chart.height>500 || internalDataStructure.chart.height<200) ? 300 : internalDataStructure.chart.height;
-	internalDataStructure.chart.width= rawJSON.chart.width || 500;						
-	internalDataStructure.chart.width=(internalDataStructure.chart.width>1000 || internalDataStructure.chart.width<200)?500: internalDataStructure.chart.width;
-	internalDataStructure.chart.type=rawJSON.chart.type||"line";
-	internalDataStructure.chart.marginX=80;
-	internalDataStructure.chart.marginY=20;
-	internalDataStructure.chart.topMarginY=60;
-	internalDataStructure.chart.xMap=rawJSON.chart.xAxisMap;
 	internalDataStructure.chart.type=chartType=rawJSON.chart.type;	
 
-	for(var i=0,k=0; i<rawJSON.data.length; i++){
-		keys=Object.keys(rawJSON.data[i]);
+	if(internalDataStructure.chart.type=='line' || internalDataStructure.chart.type='column'){
+		internalDataStructure.chart.caption=rawJSON.chart.caption || "Caption";
+		internalDataStructure.chart.subCaption=rawJSON.chart.subCaption || "subCaption";
+		internalDataStructure.chart.height=rawJSON.chart.height || 300;		
+		internalDataStructure.chart.height=(internalDataStructure.chart.height>500 || internalDataStructure.chart.height<200) ? 300 : internalDataStructure.chart.height;
+		internalDataStructure.chart.width= rawJSON.chart.width || 500;						
+		internalDataStructure.chart.width=(internalDataStructure.chart.width>1000 || internalDataStructure.chart.width<200)?500: internalDataStructure.chart.width;
+		internalDataStructure.chart.type=rawJSON.chart.type||"line";
+		internalDataStructure.chart.marginX=80;
+		internalDataStructure.chart.marginY=20;
+		internalDataStructure.chart.topMarginY=60;
+		internalDataStructure.chart.xMap=rawJSON.chart.xAxisMap;
 		
-		if(k==0 && i==0)
-			uniqueKeys[k]=keys[0];
+		for(var i=0,k=0; i<rawJSON.data.length; i++){
+			keys=Object.keys(rawJSON.data[i]);
+			
+			if(k==0 && i==0)
+				uniqueKeys[k]=keys[0];
 
-		for(var j=0; j<keys.length; j++){
-			flag=0;
-			for(var l=0;l<uniqueKeys.length; l++){
-				if(uniqueKeys[l]==keys[j]){
-					flag=1;												
+			for(var j=0; j<keys.length; j++){
+				flag=0;
+				for(var l=0;l<uniqueKeys.length; l++){
+					if(uniqueKeys[l]==keys[j]){
+						flag=1;												
+					}
 				}
-			}
-			if(flag==0 && keys[j]!=internalDataStructure.chart.xMap){
-				k++;
-				uniqueKeys[k]=keys[j];							
+				if(flag==0 && keys[j]!=internalDataStructure.chart.xMap){
+					k++;
+					uniqueKeys[k]=keys[j];							
+				}				
 			}				
-		}				
-	}
-
-	internalDataStructure.chart.yMap=uniqueKeys;
-	internalDataStructure.data=[];
-	
-	for(var i=0; i<internalDataStructure.chart.yMap.length; i++){
-		DataSet[i]=[];
-		for(var j=0,k=0;j<rawJSON.data.length;j++){				
-			if (rawJSON.data[j][internalDataStructure.chart.yMap[i]]!= undefined && rawJSON.data[j][internalDataStructure.chart.xMap] != undefined){
-				DataSet[i][k]=[];
-				DataSet[i][k][0]=new Date(rawJSON.data[j][internalDataStructure.chart.xMap].toString()).getTime();										
-				DataSet[i][k][1]=rawJSON.data[j][internalDataStructure.chart.yMap[i]];
-				k++;									
-			}											
 		}
-		DataSet[i]=sortByDate(DataSet[i]);
+
+		internalDataStructure.chart.yMap=uniqueKeys;
+		internalDataStructure.data=[];
+		
+		for(var i=0; i<internalDataStructure.chart.yMap.length; i++){
+			DataSet[i]=[];
+			for(var j=0,k=0;j<rawJSON.data.length;j++){				
+				if (rawJSON.data[j][internalDataStructure.chart.yMap[i]]!= undefined && rawJSON.data[j][internalDataStructure.chart.xMap] != undefined){
+					DataSet[i][k]=[];
+					DataSet[i][k][0]=new Date(rawJSON.data[j][internalDataStructure.chart.xMap].toString()).getTime();										
+					DataSet[i][k][1]=rawJSON.data[j][internalDataStructure.chart.yMap[i]];
+					k++;									
+				}											
+			}
+			DataSet[i]=sortByDate(DataSet[i]);
+		}
+
+		internalDataStructure.data=DataSet;
 	}
 
-	internalDataStructure.data=DataSet;
+	if(internalDataStructure.chart.type=='crosstab'){
+		internalDataStructure.chart.titles=rawJSON.chart.titles;
+		internalDataStructure.chart.tab_titles=rawJSON.chart.tab_titles;
+		internalDataStructure.chart.category_name=rawJSON.chart.category_name;
+		internalDataStructure.chart.sub_category_name=rawJSON.chart.sub_category_name;
+		internalDataStructure.chart.numberprefix=rawJSON.chart.numberprefix;
 
+		internalDataStructure.data=[];
+		for(var i=0; i<rawJSON.data.length; i++){
+			rawJSON.data.region;
+		}
+
+	}
 	return internalDataStructure;
 }
 

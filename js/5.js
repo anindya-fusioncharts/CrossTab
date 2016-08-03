@@ -184,10 +184,33 @@ Column.prototype.col=function(count){
 	return column;
 }
 
-function crossTab(drawComponents,parsedJSON){
+function CrossTab(parsedJSON){	
+//	chart.call(this,drawComponents,parsedJSON);
+	this.parsedJSON=parsedJSON;
 	//header part
-	
-	chart.call(this,drawComponents,parsedJSON);
+
+}
+
+CrossTab.prototype.header=function(drawComponents,widthPerSection){
+	var i=1;
+	var point,point1,point2;
+	point1=drawComponents.coordinate(0,1);
+	point2=drawComponents.coordinate(drawComponents.width,1);
+	drawComponents.drawLine(point1,point2,"headerline");
+	point=drawComponents.coordinate(10,10);
+	drawComponents.drawText(point,"",this.parsedJSON.chart.category_name,"headerText");
+	point=drawComponents.coordinate(i*widthPerSection+10,10);
+	drawComponents.drawText(point,"",this.parsedJSON.chart.sub_category_name,"headerText");
+	i++;
+	point1=drawComponents.coordinate(i*widthPerSection+10,1);
+	point2=drawComponents.coordinate(i*widthPerSection+10,drawComponents.height);
+	drawComponents.drawLine(point1,point2,"headerline");
+	for(var j=0; j<this.parsedJSON.chart.tab_titles.length; j++){
+		point=drawComponents.coordinate((i*widthPerSection+10+(i+1)*widthPerSection+10 -i*widthPerSection+10),10);
+		drawComponents.drawText(point,"",this.parsedJSON.chart.tab_titlesList[j],"tab_titles");
+
+		i++;
+	}
 }
 
 

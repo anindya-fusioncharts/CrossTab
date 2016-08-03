@@ -463,7 +463,9 @@ function drawChartHeading(selector,parsedJSON) {
 
 function ordinalXticks(parsedJSON){
 	for(var i=0; i<parsedJSON.data.length; i++){
-		for(var j=0; j<parsedJSON.data[i].length)
+		for(var j=0; j<parsedJSON.data[i].length;j++){
+			
+		}
 	}
 }
 

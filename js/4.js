@@ -19,6 +19,10 @@ Engine.prototype.render=function(){
 		if(this.parsedJSON.chart.type=='column'){
 			this.columnChart();
 		}
+		if(this.parsedJSON.chart.type=='crosstab'){
+			this.crossTab();
+		}
+		
 }
 
 Engine.prototype.lineChart=function(){
@@ -141,14 +145,6 @@ Engine.prototype.columnChart=function(){
 	}	
 }
 
-Engine.prototype.crossTab=function(){
-
-	this.parsedJSON.TickList={};
-	this.parsedJSON.TickList.xAxis=[];
-	this.parsedJSON.TickList.xAxis=
-
-}
-
 Engine.prototype.crossHairHandler=function(){
 	var _this=this;
 	var noChart=this.parsedJSON.chart.yMap.length;
@@ -156,6 +152,15 @@ Engine.prototype.crossHairHandler=function(){
 		this._crossHair[i]._chartArea.addEventListener("mouserollover",syncCrossHair.bind(_this));		
 		this._crossHair[i]._chartArea.addEventListener("mouseout",hideCrossHair);		
 	}	
+}
+
+Engine.prototype.crossTab=function(){
+
+	this.widthScreen=window.innerWidth-50;
+	this.widthPerSubChart=Math.floor(this.widthScreen/(this.parsedJSON.chart.tab_titlesList.length));
+	this._drawComponents[0]= new DrawComponents(this.selector,this.widthScreen,30,0,0,0);
+	var crossTab=new CrossTab(this.parsedJSON);
+	crossTab.header(this._drawComponents[0],this.widthPerSubChart);
 }
 
 /*--------Engine end-------------*/

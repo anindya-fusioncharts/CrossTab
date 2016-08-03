@@ -183,4 +183,12 @@ Column.prototype.col=function(count){
 	}
 	return column;
 }
+
+function crossTab(drawComponents,parsedJSON){
+	//header part
+	
+	chart.call(this,drawComponents,parsedJSON);
+}
+
+
 /*---------chart body end------------*/

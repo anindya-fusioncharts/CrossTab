@@ -42,9 +42,11 @@ function parseJSON(rawJSON){
 	var tab_titles=[],
 		categoryList=[],
 		subCategoryList=[];
+
 	var uniqueKeys=[],
 		DataSet=[];
 	var internalDataStructure={};
+	var max1,max2;
 
 	internalDataStructure.chart={};
 	internalDataStructure.chart.type=chartType=rawJSON.chart.type;	
@@ -98,7 +100,7 @@ function parseJSON(rawJSON){
 			DataSet[i]=sortByDate(DataSet[i]);
 		}
 
-		internalDataStructure.data=DataSet;
+		
 	}
 
 	if(internalDataStructure.chart.type=='crosstab'){
@@ -129,14 +131,74 @@ function parseJSON(rawJSON){
 				if(categoryList[j]==rawJSON.data[i].category)
 					flagC=1;
 			}
-			
+			if(flagC==0)
+				categoryList[j]=rawJSON.data[i].category;
 		}
+		tab_titles.sort();
 		internalDataStructure.chart.tab_titlesList=[];
 		internalDataStructure.chart.tab_titlesList=tab_titles;
 		
-		
 
+		internalDataStructure.chart.categoryList=[];
+		internalDataStructure.chart.categoryList=categoryList;
+
+		for(var i=0; i<categoryList.length; i++){
+			subCategoryList[i]=[];		
+			for(var j=0,k=0; j<rawJSON.data.length; j++){
+				if(k==0&& rawJSON.data[j].category==categoryList[i]){
+					subCategoryList[i][0]=rawJSON.data[j].sub_category;
+					k++;
+				}
+				flagS=0;
+				for(var m=0; m<subCategoryList[i].length; m++){
+					if(subCategoryList[i][m]==rawJSON.data[j].sub_category && rawJSON.data[j].category==categoryList[i])
+						flagS=1;
+				}
+				if(flagS==0 && rawJSON.data[j].category==categoryList[i]){
+					subCategoryList[i][k]=rawJSON.data[j].sub_category;
+					k++;					
+				}
+			}
+		}
+		internalDataStructure.chart.subCategoryList=[];
+		internalDataStructure.chart.subCategoryList=subCategoryList;
+		for(var i=0;i<categoryList.length; i++){
+			DataSet[i]=[];
+			for(var j=0; j<tab_titles.length; j++){
+				DataSet[i][j]=[];
+				for(var k=0; k<subCategoryList[i].length; k++){
+					for(var l=0; l<rawJSON.data.length; l++){
+						if(rawJSON.data[l].category==categoryList[i] && rawJSON.data[l].sub_category==subCategoryList[i][k] && rawJSON.data[l][internalDataStructure.chart.tab_titles]== tab_titles[j]){									
+							DataSet[i][j][k]=[];
+							DataSet[i][j][k][0]=rawJSON.data[l]["Sum of Profit"];
+							DataSet[i][j][k][1]=rawJSON.data[l]["Sum of Sales"];
+							break;
+						}
+					}
+					if(l==rawJSON.data.length){						
+						DataSet[i][j][k]=[];
+						DataSet[i][j][k][0]=undefined;
+						DataSet[i][j][k][1]=undefined;		
+					}
+				}	
+				
+				DataSet[i][j][subCategoryList[i].length]=[];
+				DataSet[i][j][subCategoryList[i].length][0]=0;
+				DataSet[i][j][subCategoryList[i].length][1]=0;
+
+				for(var k=0; k<subCategoryList[i].length; k++){
+					if(DataSet[i][j][k][0]!= undefined || DataSet[i][j][k][1]!=undefined){
+						DataSet[i][j][subCategoryList[i].length][0]+=DataSet[i][j][k][0];
+						DataSet[i][j][subCategoryList[i].length][1]+=DataSet[i][j][k][1];
+					}
+				}			
+			}
+		}
+		for(var i=0; i<categoryList.length; i++){
+			subCategoryList[i][subCategoryList[i].length]="Total";
+		}
 	}
+	internalDataStructure.data=DataSet;
 	return internalDataStructure;
 }
 
@@ -399,6 +461,11 @@ function drawChartHeading(selector,parsedJSON) {
 	document.getElementById(selector).appendChild(br);		
 }
 
+function ordinalXticks(parsedJSON){
+	for(var i=0; i<parsedJSON.data.length; i++){
+		for(var j=0; j<parsedJSON.data[i].length)
+	}
+}
 
 /*-------global functions end----------------*/
 /*---------custom event listener start--------------*/

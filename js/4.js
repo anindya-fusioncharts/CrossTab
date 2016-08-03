@@ -141,6 +141,14 @@ Engine.prototype.columnChart=function(){
 	}	
 }
 
+Engine.prototype.crossTab=function(){
+
+	this.parsedJSON.TickList={};
+	this.parsedJSON.TickList.xAxis=[];
+	this.parsedJSON.TickList.xAxis=
+
+}
+
 Engine.prototype.crossHairHandler=function(){
 	var _this=this;
 	var noChart=this.parsedJSON.chart.yMap.length;

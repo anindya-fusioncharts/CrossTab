@@ -31,6 +31,23 @@ function selectDiv(selector){
 	document.body.appendChild(selectSpace);
 }
 
+function numberShrink(num){
+	var tickText;
+	if(Math.abs(num)>=1000 && Math.abs(num)<1000000){			
+		tickText=num/1000 + "" +"K";			
+	}
+	if(Math.abs(num)>=1000000 && Math.abs(num)<1000000000){		
+		tickText=num/1000000 + "" +"M";			
+	}
+	if(Math.abs(num)>=1000000000 && Math.abs(num)<1000000000000){		
+		tickText=num/1000000000 + "" +"B";			
+	}
+	if(Math.abs(num)>=1000000000000){		
+		tickText=num/1000000000000 + "" +"T";		
+	}	
+	return tickText;
+}
+
 function countDecimals(value) {
     if (Math.floor(value) !== value)
         return value.toString().split(".")[1].length || 0;
@@ -137,7 +154,7 @@ function parseJSON(rawJSON){
 		tab_titles.sort();
 		internalDataStructure.chart.tab_titlesList=[];
 		internalDataStructure.chart.tab_titlesList=tab_titles;
-		
+
 
 		internalDataStructure.chart.categoryList=[];
 		internalDataStructure.chart.categoryList=categoryList;
@@ -160,8 +177,10 @@ function parseJSON(rawJSON){
 				}
 			}
 		}
+
 		internalDataStructure.chart.subCategoryList=[];
 		internalDataStructure.chart.subCategoryList=subCategoryList;
+
 		for(var i=0;i<categoryList.length; i++){
 			DataSet[i]=[];
 			for(var j=0; j<tab_titles.length; j++){
@@ -198,7 +217,7 @@ function parseJSON(rawJSON){
 			subCategoryList[i][subCategoryList[i].length]="Total";
 		}
 	}
-	internalDataStructure.data=DataSet;
+	internalDataStructure.data=DataSet;	
 	return internalDataStructure;
 }
 
@@ -461,10 +480,35 @@ function drawChartHeading(selector,parsedJSON) {
 	document.getElementById(selector).appendChild(br);		
 }
 
+function crosstabYticks(data){
+	var max=-9999999999,
+		min=0;
+		
+	var count=-1;
+	var d;
+	for(var i=0; i<data.length; i++){
+		for(var j =0; j<data[i].length; j++){
+			for(var k=0; k<data[i][j].length; k++){
+				if(max<data[i][j][k][1])
+					max=data[i][j][k][1];
+			}
+		}
+	}
+
+	d=max;
+	while(d){
+		r=Math.floor(d%10);
+		d=Math.floor(d/10);
+		count++;
+	}			
+	
+	max=(r+1) * Math.pow(10,count);	
+	
+}
 function ordinalXticks(parsedJSON){
 	for(var i=0; i<parsedJSON.data.length; i++){
 		for(var j=0; j<parsedJSON.data[i].length;j++){
-			
+
 		}
 	}
 }

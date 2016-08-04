@@ -194,24 +194,62 @@ function CrossTab(parsedJSON){
 CrossTab.prototype.header=function(drawComponents,widthPerSection){
 	var i=1;
 	var point,point1,point2;
-	point1=drawComponents.coordinate(0,1);
+	this.widthPerSection=widthPerSection;
+	point1=drawComponents.coordinate(drawComponents.marginX-11,1);
 	point2=drawComponents.coordinate(drawComponents.width,1);
 	drawComponents.drawLine(point1,point2,"headerline");
-	point=drawComponents.coordinate(10,10);
-	drawComponents.drawText(point,"",this.parsedJSON.chart.category_name,"headerText");
-	point=drawComponents.coordinate(i*widthPerSection+10,10);
-	drawComponents.drawText(point,"",this.parsedJSON.chart.sub_category_name,"headerText");
-	i++;
-	point1=drawComponents.coordinate(i*widthPerSection+10,1);
-	point2=drawComponents.coordinate(i*widthPerSection+10,drawComponents.height);
-	drawComponents.drawLine(point1,point2,"headerline");
-	for(var j=0; j<this.parsedJSON.chart.tab_titles.length; j++){
-		point=drawComponents.coordinate((i*widthPerSection+10+(i+1)*widthPerSection+10 -i*widthPerSection+10),10);
-		drawComponents.drawText(point,"",this.parsedJSON.chart.tab_titlesList[j],"tab_titles");
 
+	point=drawComponents.coordinate(drawComponents.marginX,10);
+	drawComponents.drawText(point,"",this.parsedJSON.chart.category_name,"headerText");
+	
+	point=drawComponents.coordinate(this.widthPerSection*0.45,10);
+	drawComponents.drawText(point,"",this.parsedJSON.chart.sub_category_name,"headerText");
+	
+	point1=drawComponents.coordinate(i*this.widthPerSection-11,0);
+	point2=drawComponents.coordinate(i*this.widthPerSection-11,drawComponents.height);
+	drawComponents.drawLine(point1,point2,"headerline");
+	
+	for(var j=0; j<this.parsedJSON.chart.tab_titlesList.length; j++){
+		point=drawComponents.coordinate((i*this.widthPerSection+(this.widthPerSection/2))-11,10);
+		drawComponents.drawText(point,"",this.parsedJSON.chart.tab_titlesList[j],"tab_titles");
 		i++;
+		point1=drawComponents.coordinate(i*this.widthPerSection-11,0);
+		point2=drawComponents.coordinate(i*this.widthPerSection-11,drawComponents.height);
+		drawComponents.drawLine(point1,point2,"headerline");
 	}
+	point1=drawComponents.coordinate((i)*this.widthPerSection-11,0);
+	point2=drawComponents.coordinate((i)*this.widthPerSection-11,drawComponents.height);
+	drawComponents.drawLine(point1,point2,"headerline");
 }
 
+CrossTab.prototype.category=function(drawComponents,category_name,sub_category_names,heightPerRow){
+	
+	var point,point1,point2;
+	point=drawComponents.coordinate(drawComponents.marginX,(drawComponents.height-20));
+	drawComponents.drawText(point,"",category_name,"categoryText");
 
+	for(var i=0; i<sub_category_names.length; i++){	
+		point=drawComponents.coordinate(this.widthPerSection*0.45,(drawComponents.height-20-i*heightPerRow));
+		drawComponents.drawText(point,"",sub_category_names[i],"categoryText");
+	}
+
+	point1=drawComponents.coordinate(drawComponents.marginX-11,1);
+	point2=drawComponents.coordinate(this.widthPerSection,1);
+	drawComponents.drawLine(point1,point2,"sectionline");
+
+	point1=drawComponents.coordinate(this.widthPerSection-11,0);
+	point2=drawComponents.coordinate(this.widthPerSection-11,drawComponents.height+20);
+	drawComponents.drawLine(point1,point2,"sectionline");
+}
+
+CrossTab.prototype.chartArea=function(drawComponents,heightPerRow){
+	var point,point1,point2;
+	point1=drawComponents.coordinate(drawComponents.marginX,1);
+	point2=drawComponents.coordinate(this.widthPerSection,1);
+	drawComponents.drawLine(point1,point2,"sectionline");
+
+	point1=drawComponents.coordinate(this.widthPerSection-1,0);
+	point2=drawComponents.coordinate(this.widthPerSection-1,drawComponents.height+20);
+	drawComponents.drawLine(point1,point2,"sectionline");
+}
 /*---------chart body end------------*/

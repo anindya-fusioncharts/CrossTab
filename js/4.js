@@ -9,7 +9,7 @@ function Engine(rawJSON,selector){
 	this._tooltip=[];
 	this._columns=[];
 	this.selector=selector;
-	this.parsedJSON=parseJSON(rawJSON);
+	this.parsedJSON=parseJSON(rawJSON);	
 }
 Engine.prototype.render=function(){
 		if(this.parsedJSON.chart.type=='line'){
@@ -94,8 +94,6 @@ Engine.prototype.columnChart=function(){
 	var point0={};
 	var count=0;
 	var _this=this;
-
-
 	
 	if(typeof this.customSort == "function"){
 		this.customSort();
@@ -155,12 +153,32 @@ Engine.prototype.crossHairHandler=function(){
 }
 
 Engine.prototype.crossTab=function(){
+	var n=0,m=0;
+	var heightPerRow=30,heightHeader=30;
+	var marginX;
 
-	this.widthScreen=window.innerWidth-50;
-	this.widthPerSubChart=Math.floor(this.widthScreen/(this.parsedJSON.chart.tab_titlesList.length));
-	this._drawComponents[0]= new DrawComponents(this.selector,this.widthScreen,30,0,0,0);
+	this._drawComponentsCharts=[];
+	this.yticks=crosstabYticks(this.parsedJSON.data);
+
+	this.widthScreen=window.innerWidth-60;
+	this.widthPerSubChart=Math.ceil(this.widthScreen/(this.parsedJSON.chart.tab_titlesList.length+1));
 	var crossTab=new CrossTab(this.parsedJSON);
-	crossTab.header(this._drawComponents[0],this.widthPerSubChart);
+	
+	this._drawComponents[n]= new DrawComponents(this.selector,this.widthScreen,heightHeader,10,0,0,"noPercent");	
+	crossTab.header(this._drawComponents[n],this.widthPerSubChart);
+	n++;
+	
+	for(var i=0; i<this.parsedJSON.chart.categoryList.length; i++){
+		
+		this._drawComponents[n]= new DrawComponents(this.selector,this.widthPerSubChart,(heightPerRow*this.parsedJSON.chart.subCategoryList[i].length),10,0,0,"noPercent");
+		crossTab.category(this._drawComponents[n],this.parsedJSON.chart.categoryList[i],this.parsedJSON.chart.subCategoryList[i],heightPerRow);
+		
+		for(var j=0; j<this.parsedJSON.chart.tab_titlesList.length; j++){	
+			this._drawComponentsCharts[m]= new DrawComponents(this.selector,this.widthPerSubChart,(heightPerRow*this.parsedJSON.chart.subCategoryList[i].length),0,0,0,"noPercent");
+			crossTab.chartArea(this._drawComponentsCharts[m],heightPerRow);
+			m++;
+		}
+	}
 }
 
 /*--------Engine end-------------*/

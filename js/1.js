@@ -63,7 +63,9 @@ function parseJSON(rawJSON){
 	var uniqueKeys=[],
 		DataSet=[];
 	var internalDataStructure={};
-	var max1,max2;
+	var maxProfitPrcnt,maxLossPrcnt,minProfitPrcnt,minLossPrcnt,percent;
+
+	maxProfitPrcnt=maxLossPrcnt=minProfitPrcnt=minLossPrcnt=undefined;
 
 	internalDataStructure.chart={};
 	internalDataStructure.chart.type=chartType=rawJSON.chart.type;	
@@ -126,13 +128,16 @@ function parseJSON(rawJSON){
 		internalDataStructure.chart.category_name=rawJSON.chart.category_name;
 		internalDataStructure.chart.sub_category_name=rawJSON.chart.sub_category_name;
 		internalDataStructure.chart.numberprefix=rawJSON.chart.numberprefix;
-
+		internalDataStructure.chart.maxProfitColor=rawJSON.chart.maxProfitColor;
+		internalDataStructure.chart.minProfitColor=rawJSON.chart.minProfitColor;
+		internalDataStructure.chart.maxLossColor=rawJSON.chart.maxLossColor;
+		internalDataStructure.chart.minLossColor=rawJSON.chart.minLossColor;
+		internalDataStructure.chart.numberOfColorVarient=rawJSON.chart.numberOfColorVarient;
 		internalDataStructure.data=[];
 		for(var i=0,k=0; i<rawJSON.data.length; i++){
 			flag=0;
 			if(tab_titles[0]== undefined)
-				tab_titles[0]= rawJSON.data[0][internalDataStructure.chart.tab_titles];
-			
+				tab_titles[0]= rawJSON.data[0][internalDataStructure.chart.tab_titles];			
 			for(var j=0; j< tab_titles.length; j++){
 				if(tab_titles[j]==rawJSON.data[i][internalDataStructure.chart.tab_titles])
 					flag =1;
@@ -140,7 +145,6 @@ function parseJSON(rawJSON){
 			if(flag==0){
 				tab_titles[j]=rawJSON.data[i][internalDataStructure.chart.tab_titles];
 			}
-
 			flagC=0;
 			if(categoryList[0]== undefined)
 				categoryList[0]= rawJSON.data[0].category;
@@ -199,18 +203,20 @@ function parseJSON(rawJSON){
 						DataSet[i][j][k][0]=undefined;
 						DataSet[i][j][k][1]=undefined;		
 					}
-				}	
-				
+				}					
 				DataSet[i][j][subCategoryList[i].length]=[];
 				DataSet[i][j][subCategoryList[i].length][0]=0;
 				DataSet[i][j][subCategoryList[i].length][1]=0;
-
 				for(var k=0; k<subCategoryList[i].length; k++){
 					if(DataSet[i][j][k][0]!= undefined || DataSet[i][j][k][1]!=undefined){
 						DataSet[i][j][subCategoryList[i].length][0]+=DataSet[i][j][k][0];
 						DataSet[i][j][subCategoryList[i].length][1]+=DataSet[i][j][k][1];
 					}
-				}			
+				}	
+				if(DataSet[i][j][subCategoryList[i].length][1]==0){
+					DataSet[i][j][subCategoryList[i].length][1]=undefined;
+					DataSet[i][j][subCategoryList[i].length][0]=undefined;
+				}		
 			}
 		}
 		for(var i=0; i<categoryList.length; i++){
@@ -218,6 +224,41 @@ function parseJSON(rawJSON){
 		}
 	}
 	internalDataStructure.data=DataSet;	
+	for(var i=0; i<DataSet.length; i++){
+		for(var j=0; j<DataSet[i].length; j++){
+			for(var k=0; k<DataSet[i][j].length; k++){
+					if(DataSet[i][j][k][1]!= undefined){
+						if(DataSet[i][j][k][0]>=0){
+							if(maxProfitPrcnt == undefined && minProfitPrcnt== undefined){
+								maxProfitPrcnt=minProfitPrcnt=100*DataSet[i][j][k][0]/DataSet[i][j][k][1];
+							}
+							percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+							if(maxProfitPrcnt<percent){
+								maxProfitPrcnt=percent;
+							}
+							if(minProfitPrcnt>percent){
+								minProfitPrcnt=percent;
+							}					
+						} else {
+							if(maxLossPrcnt == undefined && minLossPrcnt== undefined){
+								maxLossPrcnt=minLossPrcnt=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+							}
+							percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+							if(maxLossPrcnt<percent){
+								maxLossPrcnt=percent;
+							}
+							if(minLossPrcnt>percent){
+								minLossPrcnt=percent;
+							}				
+						}
+					}
+			}
+		}
+	}
+	internalDataStructure.maxProfitPrcnt=maxProfitPrcnt;
+	internalDataStructure.minProfitPrcnt=minProfitPrcnt;
+	internalDataStructure.maxLossPrcnt=maxLossPrcnt;
+	internalDataStructure.minLossPrcnt=minLossPrcnt;
 	return internalDataStructure;
 }
 
@@ -483,9 +524,10 @@ function drawChartHeading(selector,parsedJSON) {
 function crosstabYticks(data){
 	var max=-9999999999,
 		min=0;
-		
+	var diff;
+	var ticks=[];
 	var count=-1;
-	var d;
+	var d,r;
 	for(var i=0; i<data.length; i++){
 		for(var j =0; j<data[i].length; j++){
 			for(var k=0; k<data[i][j].length; k++){
@@ -494,29 +536,58 @@ function crosstabYticks(data){
 			}
 		}
 	}
-
 	d=max;
 	while(d){
 		r=Math.floor(d%10);
 		d=Math.floor(d/10);
 		count++;
-	}			
-	
+	}				
 	max=(r+1) * Math.pow(10,count);	
-	
-}
-function ordinalXticks(parsedJSON){
-	for(var i=0; i<parsedJSON.data.length; i++){
-		for(var j=0; j<parsedJSON.data[i].length;j++){
-
-		}
+	diff=(Math.abs(max-min)/4);
+	ticks[0]=min;
+	for(var i=1; i<=4; i++){
+		ticks[i]=ticks[i-1]+diff;
 	}
+	return ticks;
+}
+
+
+function getGradient(color1,color2,ratio){
+    color1 = color1.substring(1,color1.length);
+    color2 = color2.substring(1,color2.length);
+ 
+    var hex = function(x) {
+        x = x.toString(16);
+        return (x.length == 1) ? '0' + x : x;
+    };
+
+    var r = Math.ceil(parseInt(color1.substring(0,2), 16) * ratio + parseInt(color2.substring(0,2), 16) * (1-ratio));
+    var g = Math.ceil(parseInt(color1.substring(2,4), 16) * ratio + parseInt(color2.substring(2,4), 16) * (1-ratio));
+    var b = Math.ceil(parseInt(color1.substring(4,6), 16) * ratio + parseInt(color2.substring(4,6), 16) * (1-ratio));
+
+    var middle = hex(r) + hex(g) + hex(b);
+    return middle;
+}
+
+function rgb(str){
+    return str.match(/\w\w/g).map(function(b){ return parseInt(b,16) })
+}
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+		        r: parseInt(result[1], 16),
+		        g: parseInt(result[2], 16),
+		        b: parseInt(result[3], 16)
+		    } : null;
 }
 
 /*-------global functions end----------------*/
+
 /*---------custom event listener start--------------*/
 var CustomMouseRollOver=new CustomEvent("mouserollover",{"detail":{x:"",y:"",left:""}});
 /*-----------custom event listener stop----------------*/
+
 /*---------on window resize-----------*/
 window.onresize = function() {
     location.reload();

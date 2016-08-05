@@ -80,25 +80,35 @@ YAxis.prototype.yAxisTicksText=function(tickList,noDiv){
 		point1=this.drawcomponents.coordinate(x1,y1);
 		point2=this.drawcomponents.coordinate(x2,y2);	
 		
-	
-		if( Math.abs(tickList[i])<1000){
-			point=this.drawcomponents.coordinate(-(this.drawcomponents.marginX-this.drawcomponents.paddingTextX-8),(y1-4));
-			if(tickList[tickList.length-1]<1)
-				fixedDecimal=tickList[tickList.length-1].toString().length-2;
-			else
-				fixedDecimal=2;
-			if(tickList[i]==0)
-				tickText='0';
-			else{
-				if(tickList[i]%1==0)
-					tickText=tickList[i].toString();
+		if(typeof tickList[i] == 'number'){	
+			if( Math.abs(tickList[i])<1000){
+				point=this.drawcomponents.coordinate(-(this.drawcomponents.marginX-this.drawcomponents.paddingTextX-8),(y1-4));
+				if(tickList[tickList.length-1]<1)
+					fixedDecimal=tickList[tickList.length-1].toString().length-2;
 				else
-					tickText=tickList[i].toFixed(fixedDecimal).toString();
-			}							
+					fixedDecimal=2;
+				if(tickList[i]==0)
+					tickText='0';
+				else{
+					if(tickList[i]%1==0)
+						tickText=tickList[i].toString();
+					else
+						tickText=tickList[i].toFixed(fixedDecimal).toString();
+				}							
+			}
+			if(Math.abs(tickList[i])>=1000 && Math.abs(tickList[i])<1000000){			
+				tickText=tickList[i]/1000 + "" +"K";			
+			}
+			if(Math.abs(tickList[i])>=1000000 && Math.abs(tickList[i])<1000000000){		
+				tickText=tickList[i]/1000000 + "" +"M";			
+			}
+			if(Math.abs(tickList[i])>=1000000000 && Math.abs(tickList[i])<1000000000000){		
+				tickText=tickList[i]/1000000000 + "" +"B";			
+			}
+			if(Math.abs(tickList[i])>=1000000000000){		
+				tickText=tickList[i]/1000000000000 + "" +"T";		
+			}	
 		}
-		if(tickList[i]>=1000)
-			tickText=numberShrink(num);
-		
 		if(noDiv== undefined){
 			point0=this.drawcomponents.coordinate(-1,y1);
 			point1=this.drawcomponents.coordinate(this.drawcomponents.width,y1);

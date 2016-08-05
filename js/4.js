@@ -154,31 +154,31 @@ Engine.prototype.crossHairHandler=function(){
 
 Engine.prototype.crossTab=function(){
 	var n=0,m=0;
-	var heightPerRow=30,heightHeader=30;
+	var heightPerRow=30,heightHeader=30,heightFooter=70;
 	var marginX;
-
 	this._drawComponentsCharts=[];
-	this.yticks=crosstabYticks(this.parsedJSON.data);
+	this.parsedJSON.ticks={};
+	this.parsedJSON.ticks.alterYaxis=crosstabYticks(this.parsedJSON.data);
+	this.parsedJSON.ticks.ordinalAlterXaxis=this.parsedJSON.chart.subCategoryList;	
 
 	this.widthScreen=window.innerWidth-60;
 	this.widthPerSubChart=Math.ceil(this.widthScreen/(this.parsedJSON.chart.tab_titlesList.length+1));
-	var crossTab=new CrossTab(this.parsedJSON);
-	
+	var crossTab=new CrossTab(this.parsedJSON);	
 	this._drawComponents[n]= new DrawComponents(this.selector,this.widthScreen,heightHeader,10,0,0,"noPercent");	
 	crossTab.header(this._drawComponents[n],this.widthPerSubChart);
-	n++;
-	
-	for(var i=0; i<this.parsedJSON.chart.categoryList.length; i++){
-		
+	n++;	
+	for(var i=0; i<this.parsedJSON.chart.categoryList.length; i++){		
 		this._drawComponents[n]= new DrawComponents(this.selector,this.widthPerSubChart,(heightPerRow*this.parsedJSON.chart.subCategoryList[i].length),10,0,0,"noPercent");
-		crossTab.category(this._drawComponents[n],this.parsedJSON.chart.categoryList[i],this.parsedJSON.chart.subCategoryList[i],heightPerRow);
-		
+		crossTab.category(this._drawComponents[n],this.parsedJSON.chart.categoryList[i],this.parsedJSON.chart.subCategoryList[i],heightPerRow);		
 		for(var j=0; j<this.parsedJSON.chart.tab_titlesList.length; j++){	
 			this._drawComponentsCharts[m]= new DrawComponents(this.selector,this.widthPerSubChart,(heightPerRow*this.parsedJSON.chart.subCategoryList[i].length),0,0,0,"noPercent");
-			crossTab.chartArea(this._drawComponentsCharts[m],heightPerRow);
+			crossTab.chartArea(this._drawComponentsCharts[m],heightPerRow,i,j);
 			m++;
 		}
+		n++;
 	}
+	this._drawComponents[n]= new DrawComponents(this.selector,this.widthScreen,heightFooter,10,0,0,"noPercent");	
+	crossTab.footer(this._drawComponents[n],this.widthPerSubChart);
 }
 
 /*--------Engine end-------------*/

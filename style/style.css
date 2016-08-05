@@ -153,12 +153,12 @@
 	stroke:black !important; 
 	fill:transparent !important;
 }
-.headerline,.sectionline{
+.headerline,.sectionline,.footerline{
 	stroke:black; 
 	stroke-width:1;
 	shape-rendering:crispEdges;
 }
-.headerText{
+.headerText,.yaxisticksText{
 	text-anchor:start;
  	font-family:"Verdana" !important;
     font-size:15px !important;
@@ -175,3 +175,15 @@
     font-size:15px !important;
 }
 
+.HighlightedText{
+	text-anchor:start;
+ 	font-family:"Verdana" !important;
+    font-size:15px !important;
+    font-weight: bold;	
+}
+.title{
+	text-anchor: middle!important;
+	font-size:20px;
+	font-family: "Helvetica Neue",Arial !important;	
+	
+}

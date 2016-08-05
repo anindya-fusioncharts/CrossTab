@@ -5,6 +5,11 @@
 		"tab_titles":"region",		
 		"category_name":"Product Type",
 		"sub_category_name":"Product",
+		"maxProfitColor":"#00000",
+		"minProfitColor":"#E0E0E0",
+		"maxLossColor":"#B71C1C",
+		"minLossColor":"#E57373",
+		"numberOfColorVarient":4,
 		"numberprefix": "$"
 	},
 	"data":[
@@ -223,7 +228,7 @@
 			"sub_category":"Mint",								
 			"region":"Central",
 			"Sum of Profit":4069,
-			"Sum of Sales":93637
+			"Sum of Sales":9337
 		},	
 		{
 			"category":"Herbal Tea",

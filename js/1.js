@@ -218,7 +218,7 @@ function parseJSON(rawJSON,selector){
 		for(var i=0; i<categoryList.length; i++){
 			subCategoryList[i][subCategoryList[i].length]="Total";
 		}
-		internalDataStructure.data=DataSet;	
+		
 		for(var i=0; i<DataSet.length; i++){
 			for(var j=0; j<DataSet[i].length; j++){
 				for(var k=0; k<DataSet[i][j].length; k++){
@@ -258,6 +258,7 @@ function parseJSON(rawJSON,selector){
 		document.getElementById(selector).innerHTML="Chart type not supported";
 		window.stop();
 	}
+	internalDataStructure.data=DataSet;	
 	return internalDataStructure;
 }
 

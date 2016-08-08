@@ -150,7 +150,7 @@
 
 
 .chartArea{
-	stroke:black !important; 
+	stroke:transparent !important; 
 	fill:transparent !important;
 }
 .headerline,.sectionline,.footerline{

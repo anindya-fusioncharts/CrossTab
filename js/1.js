@@ -54,7 +54,7 @@ function countDecimals(value) {
     return 0;
 }
 
-function parseJSON(rawJSON){
+function parseJSON(rawJSON,selector){
 	var noData,keys,flag,flagC,flagS;
 	var tab_titles=[],
 		categoryList=[],
@@ -117,12 +117,8 @@ function parseJSON(rawJSON){
 				}											
 			}
 			DataSet[i]=sortByDate(DataSet[i]);
-		}
-
-		
-	}
-
-	if(internalDataStructure.chart.type=='crosstab'){
+		}		
+	} else if(internalDataStructure.chart.type=='crosstab'){
 		internalDataStructure.chart.titles=rawJSON.chart.titles;
 		internalDataStructure.chart.tab_titles=rawJSON.chart.tab_titles;
 		internalDataStructure.chart.category_name=rawJSON.chart.category_name;
@@ -222,43 +218,46 @@ function parseJSON(rawJSON){
 		for(var i=0; i<categoryList.length; i++){
 			subCategoryList[i][subCategoryList[i].length]="Total";
 		}
-	}
-	internalDataStructure.data=DataSet;	
-	for(var i=0; i<DataSet.length; i++){
-		for(var j=0; j<DataSet[i].length; j++){
-			for(var k=0; k<DataSet[i][j].length; k++){
-					if(DataSet[i][j][k][1]!= undefined){
-						if(DataSet[i][j][k][0]>=0){
-							if(maxProfitPrcnt == undefined && minProfitPrcnt== undefined){
-								maxProfitPrcnt=minProfitPrcnt=100*DataSet[i][j][k][0]/DataSet[i][j][k][1];
+		internalDataStructure.data=DataSet;	
+		for(var i=0; i<DataSet.length; i++){
+			for(var j=0; j<DataSet[i].length; j++){
+				for(var k=0; k<DataSet[i][j].length; k++){
+						if(DataSet[i][j][k][1]!= undefined){
+							if(DataSet[i][j][k][0]>=0){
+								if(maxProfitPrcnt == undefined && minProfitPrcnt== undefined){
+									maxProfitPrcnt=minProfitPrcnt=100*DataSet[i][j][k][0]/DataSet[i][j][k][1];
+								}
+								percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+								if(maxProfitPrcnt<percent){
+									maxProfitPrcnt=percent;
+								}
+								if(minProfitPrcnt>percent){
+									minProfitPrcnt=percent;
+								}					
+							} else {
+								if(maxLossPrcnt == undefined && minLossPrcnt== undefined){
+									maxLossPrcnt=minLossPrcnt=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+								}
+								percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
+								if(maxLossPrcnt<percent){
+									maxLossPrcnt=percent;
+								}
+								if(minLossPrcnt>percent){
+									minLossPrcnt=percent;
+								}				
 							}
-							percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
-							if(maxProfitPrcnt<percent){
-								maxProfitPrcnt=percent;
-							}
-							if(minProfitPrcnt>percent){
-								minProfitPrcnt=percent;
-							}					
-						} else {
-							if(maxLossPrcnt == undefined && minLossPrcnt== undefined){
-								maxLossPrcnt=minLossPrcnt=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
-							}
-							percent=(100*Math.abs(DataSet[i][j][k][0])/DataSet[i][j][k][1]).toFixed(2);
-							if(maxLossPrcnt<percent){
-								maxLossPrcnt=percent;
-							}
-							if(minLossPrcnt>percent){
-								minLossPrcnt=percent;
-							}				
 						}
-					}
+				}
 			}
 		}
+		internalDataStructure.maxProfitPrcnt=maxProfitPrcnt;
+		internalDataStructure.minProfitPrcnt=minProfitPrcnt;
+		internalDataStructure.maxLossPrcnt=maxLossPrcnt;
+		internalDataStructure.minLossPrcnt=minLossPrcnt;
+	} else{
+		document.getElementById(selector).innerHTML="Chart type not supported";
+		window.stop();
 	}
-	internalDataStructure.maxProfitPrcnt=maxProfitPrcnt;
-	internalDataStructure.minProfitPrcnt=minProfitPrcnt;
-	internalDataStructure.maxLossPrcnt=maxLossPrcnt;
-	internalDataStructure.minLossPrcnt=minLossPrcnt;
 	return internalDataStructure;
 }
 

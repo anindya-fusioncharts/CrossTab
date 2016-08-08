@@ -9,7 +9,7 @@ function Engine(rawJSON,selector){
 	this._tooltip=[];
 	this._columns=[];
 	this.selector=selector;
-	this.parsedJSON=parseJSON(rawJSON);	
+	this.parsedJSON=parseJSON(rawJSON,selector);	
 }
 Engine.prototype.render=function(){
 		if(this.parsedJSON.chart.type=='line'){

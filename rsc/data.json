@@ -9,7 +9,6 @@
 		"minProfitColor":"#E0E0E0",
 		"maxLossColor":"#B71C1C",
 		"minLossColor":"#E57373",
-		"numberOfColorVarient":4,
 		"numberprefix": "$"
 	},
 	"data":[

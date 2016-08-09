@@ -6,7 +6,7 @@ function Engine(rawJSON,selector){
 	this._drawComponents=[];
 	this._crossHair=[],
 	this._anchors=[];
-	this._tooltip=[];
+	this._tooltips=[];
 	this._columns=[];
 	this.selector=selector;
 	this.parsedJSON=parseJSON(rawJSON,selector);	
@@ -34,7 +34,7 @@ Engine.prototype.lineChart=function(){
 	var point0={};
 	var count=0;
 	var _this=this;
-	
+	var drawComponent;
 	if(typeof this.customSort == "function"){
 		this.customSort();
 	}
@@ -53,11 +53,12 @@ Engine.prototype.lineChart=function(){
 		this.parsedJSON.chart.topMarginY=75;
 	}else{
 		this.parsedJSON.chart.marginY=75;
-		this.parsedJSON.chart.topMarginY=45;										
+		this.parsedJSON.chart.topMarginY=45;		 								
 	}
-	selectDiv(this.selector);
+	dragBox();
 
-	drawChartHeading(this.selector,this.parsedJSON);
+	LineChart.prototype.drawChartHeading.call(_this,this.selector,this.parsedJSON);
+
 	noChart=this.parsedJSON.chart.yMap.length;
 	for(var i=0; i<noChart; i++){	
 		this._anchors[i]=[];	
@@ -73,15 +74,14 @@ Engine.prototype.lineChart=function(){
 		_lineChart.path();
 		this._anchors[i]=_lineChart.anchor();
 		this._crossHair[i]=_lineChart.crossHair();
-	
 		point0.x=0;
 		point0.y=0;
-		this._tooltip[i]=new Tooltip(this._drawComponents[i],point0,"tooltip","tooltipText");
+		this._tooltips[i]=tooltip(this._drawComponents[i],point0,"tooltip","tooltipText");
 			
-		this._drawComponents[i].svg.addEventListener("mousedown",drawSelectSpace.bind(null,this._drawComponents[i],this.selector,"line"));
-		this._drawComponents[i].svg.addEventListener("mousemove",resizeSelectSpace.bind(null,this._drawComponents[i],this.selector,"line"));
-		this._drawComponents[i].svg.addEventListener("mouseup",destroySelectSpace.bind(null,this._drawComponents[i],this.selector,"line"));	
-		this._drawComponents[i].svg.addEventListener("mouseleave",destroySelectSpace.bind(null,this._drawComponents[i],this.selector,"line"));			
+		this._drawComponents[i].svg.addEventListener("mousedown",_lineChart.drawSelectSpace.bind(_lineChart,this._anchors));
+		this._drawComponents[i].svg.addEventListener("mousemove",_lineChart.resizeSelectSpace.bind(_lineChart));
+		this._drawComponents[i].svg.addEventListener("mouseup",_lineChart.destroySelectSpace.bind(null));	
+		this._drawComponents[i].svg.addEventListener("mouseleave",_lineChart.destroySelectSpace.bind(null));			
 	}		
 }
 
@@ -94,7 +94,8 @@ Engine.prototype.columnChart=function(){
 	var point0={};
 	var count=0;
 	var _this=this;
-	
+	var drawComponent;
+	var limits;
 	if(typeof this.customSort == "function"){
 		this.customSort();
 	}
@@ -115,9 +116,18 @@ Engine.prototype.columnChart=function(){
 		this.parsedJSON.chart.marginY=75;
 		this.parsedJSON.chart.topMarginY=45;										
 	}
-	selectDiv(this.selector);
+	dragBox();
 
-	drawChartHeading(this.selector,this.parsedJSON);
+	limits={
+		topLimit: this.parsedJSON.chart.marginY,
+		bottomLimit: this.parsedJSON.chart.height- this.parsedJSON.chart.marginY,
+		rightLimit: this.parsedJSON.chart.width,
+		leftLimit: this.parsedJSON.chart.marginX
+	};
+
+
+	Column.prototype.drawChartHeading.call(_this,this.selector,this.parsedJSON);
+
 	noChart=this.parsedJSON.chart.yMap.length;
 	for(var i=0; i<noChart; i++){	
 		this._anchors[i]=[];	
@@ -134,12 +144,18 @@ Engine.prototype.columnChart=function(){
 		this._columns[i]=_columnChart.col(count);
 		point0.x=0;
 		point0.y=0;
-		this._tooltip[i]=new Tooltip(this._drawComponents[i],point0,"tooltip","tooltipText");	
+		this._tooltips[i]=tooltip(this._drawComponents[i],point0,"tooltip","tooltipText");	
 
-		this._drawComponents[i].svg.addEventListener("mousedown",drawSelectSpace.bind(null,this._drawComponents[i],this.selector,"column"));
-		this._drawComponents[i].svg.addEventListener("mousemove",resizeSelectSpace.bind(null,this._drawComponents[i],this.selector,"column"));
-		this._drawComponents[i].svg.addEventListener("mouseup",destroySelectSpace.bind(null,this._drawComponents[i],this.selector,"column"));	
-		this._drawComponents[i].svg.addEventListener("mouseleave",destroySelectSpace.bind(null,this._drawComponents[i],this.selector,"column"));			
+		this._drawComponents[i].svg.addEventListener("mousedown",_columnChart.drawSelectSpace.bind(_columnChart,this._columns));
+		this._drawComponents[i].svg.addEventListener("mousemove",_columnChart.resizeSelectSpace.bind(_columnChart,this._columns));
+		this._drawComponents[i].svg.addEventListener("mouseup",_columnChart.destroySelectSpace.bind(null,"column"));	
+		this._drawComponents[i].svg.addEventListener("mouseleave",_columnChart.destroySelectSpace.bind(null,"column"));			
+
+		for(var j=0; j<this._columns[i].length; j++){
+			this._columns[i][j].graphics.addEventListener("mousemove",_columnChart.disPatchMouseOver.bind(null,this._columns[i][j].config.x,this._columns[i][j].config.y,this._columns));
+			this._columns[i][j].graphics.addEventListener("mouserollover",_columnChart.highlightColumn.bind(null,this._columns,this._tooltips,limits),false);
+			this._columns[i][j].graphics.addEventListener("mouseout",_columnChart.unfocus.bind(null,this._columns,this._tooltips),false);
+		}		
 	}	
 }
 
@@ -147,8 +163,8 @@ Engine.prototype.crossHairHandler=function(){
 	var _this=this;
 	var noChart=this.parsedJSON.chart.yMap.length;
 	for(var i=0; i<noChart; i++){
-		this._crossHair[i]._chartArea.addEventListener("mouserollover",syncCrossHair.bind(_this));		
-		this._crossHair[i]._chartArea.addEventListener("mouseout",hideCrossHair);		
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouserollover",syncCrossHair.bind(_this));		
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouseout",hideCrossHair);		
 	}	
 }
 

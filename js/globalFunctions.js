@@ -18,7 +18,7 @@ function tickspoistion(parsedJSON){
 		return true;
 }
 
-function selectDiv(selector){
+function dragBox(){
 	selectSpace=document.createElement("div");
 	selectSpace.style.position="absolute";
 	selectSpace.style.background ="#727272";
@@ -55,15 +55,22 @@ function countDecimals(value) {
 }
 
 function parseJSON(rawJSON,selector){
-	var noData,keys,flag,flagC,flagS;
-	var tab_titles=[],
+	var noData,
+		keys,
+		flag,
+		flagC,
+		flagS,
+		tab_titles=[],
 		categoryList=[],
-		subCategoryList=[];
-
-	var uniqueKeys=[],
-		DataSet=[];
-	var internalDataStructure={};
-	var maxProfitPrcnt,maxLossPrcnt,minProfitPrcnt,minLossPrcnt,percent;
+		subCategoryList=[],
+		uniqueKeys=[],
+		DataSet=[],
+		internalDataStructure={},
+		maxProfitPrcnt,
+		maxLossPrcnt,
+		minProfitPrcnt,
+		minLossPrcnt,
+		percent;
 
 	maxProfitPrcnt=maxLossPrcnt=minProfitPrcnt=minLossPrcnt=undefined;
 
@@ -510,24 +517,7 @@ function bSearch(data,key){
     return -1*(currentIndex+1);
 }
 
-function drawChartHeading(selector,parsedJSON) {
-	var chartHeadings=new DrawComponents(selector,window.innerWidth-200,50,parsedJSON.chart.marginX,parsedJSON.chart.marginY,0,"Heading");
-	var point;
-	point={
-		x: chartHeadings.width- Math.floor(chartHeadings.width/2 -chartHeadings.marginX),
-		y:50-30
-	};
-	chartHeadings.drawText(point,".35em",parsedJSON.chart.caption,"Caption");	
 
-	point={
-		x: chartHeadings.width- Math.floor(chartHeadings.width/2 -chartHeadings.marginX),
-		y:50-10
-	};
-	chartHeadings.drawText(point,".35em",parsedJSON.chart.subCaption,"subCaption");	
-
-	var br=document.createElement("br");
-	document.getElementById(selector).appendChild(br);		
-}
 
 function crosstabYticks(data){
 	var max=-9999999999,

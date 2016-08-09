@@ -56,7 +56,15 @@ DrawComponents.prototype.drawLine=function(point1,point2,classIn){
 	line.setAttribute("y2", point2.y);
 	line.setAttribute("class",classIn);
 	this.svg.appendChild(line);	
-	return line;	
+	return{
+			config:{
+				x1: point1.x,
+				y1: point1.y,
+				x2: point2.x,
+				y2: point2.y
+			},
+			graphics:line
+		};	
 }
 
 DrawComponents.prototype.drawText=function(point,dy,textIn,classIn,angle){
@@ -73,7 +81,13 @@ DrawComponents.prototype.drawText=function(point,dy,textIn,classIn,angle){
 
 	text.setAttribute("class",classIn);	
 	this.svg.appendChild(text);
-	return text;
+	return{
+			config:{
+				x: point.x,
+				y: point.y
+			},
+	 		graphics:text
+		};
 }
 
 DrawComponents.prototype.drawPolygon=function(points,classIn){
@@ -81,7 +95,12 @@ DrawComponents.prototype.drawPolygon=function(points,classIn){
 	polyline.setAttribute("points",points);		
 	polyline.setAttribute("class",classIn);
 	this.svg.appendChild(polyline);
-	return polyline;
+	return {
+			config:{
+				points:points
+			},
+			graphics:polyline
+		};
 }
 
 DrawComponents.prototype.drawPath=function(_path,classIn){
@@ -91,7 +110,12 @@ DrawComponents.prototype.drawPath=function(_path,classIn){
 	path.setAttribute("style","stroke:#1e7ac9; stroke-width:3; fill:transparent");
 
 	this.svg.appendChild(path);
-	return path;
+	return {
+			config: {
+				path: _path
+			},
+			graphics: path
+		};
 }
 
 DrawComponents.prototype.drawCircle= function(point,r,classIn,Xdata,Ydata,absoluteX,absoluteY){
@@ -105,9 +129,19 @@ DrawComponents.prototype.drawCircle= function(point,r,classIn,Xdata,Ydata,absolu
 	circle.setAttribute("absoluteX",absoluteX);
 	circle.setAttribute("absoluteY",absoluteY);	
 	circle.setAttribute("class",classIn);
-	circle.style.zIndex=1000;
 	this.svg.appendChild(circle);	
-	return circle;
+	return {
+			config:{
+				cx: point.x,
+				cy: point.y,
+				r: r,
+				Ydata: Ydata,
+				Xdata: Xdata,
+				absoluteX: absoluteX,
+				absoluteY: absoluteY
+			},
+			graphics: circle
+		};
 }
 
 DrawComponents.prototype.drawRect=function(x,y,classIn,h,w,style,value,absoluteX,absoluteY){
@@ -124,26 +158,23 @@ DrawComponents.prototype.drawRect=function(x,y,classIn,h,w,style,value,absoluteX
 	rect.setAttribute("absoluteX",absoluteX);
 	rect.setAttribute("absoluteY",absoluteY);		
 	this.svg.appendChild(rect);
-	return rect;
+	return {
+			config: {
+				x: x,
+				y: y,
+				height: h,
+				width: w,
+				value: value,
+				absoluteX: absoluteX,
+				absoluteY: absoluteY
+			},
+			graphics:rect
+		};
 }
 
 /*------drawcomponent end-------*/
-/*--------tooltip start------------*/
-function Tooltip(drawComponents,point,class_Tooltip,class_TooltipText){
-	this.drawComponents=drawComponents;
-	this.point=point;
-	var tooltip=this.drawComponents.drawRect(point.x+5,point.y,class_Tooltip,10,0,"stroke:#8D6D60 ;stroke-width:1; fill:#FDD9CB");		
-	var tooltipText=this.drawComponents.drawText(point,"","",class_TooltipText,0);
-
-	tooltipText.setAttribute("style",'fill: #8D6D60');		
-	tooltipText.setAttribute("class",class_TooltipText);
-
-	this.drawComponents.svg.insertBefore(tooltip,tooltipText);
-	return {
-		"rect":tooltip,
-		"text":tooltipText
-	}
-}
 
 
-/*---------------tooltip end--------------*/
+
+
+

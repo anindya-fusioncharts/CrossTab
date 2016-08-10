@@ -1,4 +1,4 @@
-/*-----------Line Chart--------------*/
+/*-----------Line Chart--------------*/ 
 function LineChart(drawComponents,parsedJSON,index){
 	this.index=index;		
 	Chart.call(this,drawComponents,parsedJSON);
@@ -70,14 +70,13 @@ LineChart.prototype.chartArea=function(){
 	h=Math.abs(this.parsedJSON.chart.height-this.parsedJSON.chart.topMarginY-this.parsedJSON.chart.marginY);
 			
 	_chartArea=this.drawComponents.drawRect(point.x,point.y,"chartArea",h,w,"stroke:#black; fill:transparent");
-	
+
 	left=_chartArea.graphics.getBoundingClientRect().left;
 
 	_chartArea.graphics.addEventListener("mousemove",function(){
-			CustomMouseRollOver.detail.x=Math.ceil(event.clientX-left);
-			_chartArea.graphics.dispatchEvent(CustomMouseRollOver);
-		});
-
+				CustomMouseRollOver.detail.x=Math.ceil(event.clientX-left);
+				_chartArea.graphics.dispatchEvent(CustomMouseRollOver);
+			});	
 	return _chartArea;
 }
 
@@ -109,9 +108,8 @@ LineChart.prototype.crossHair=function(){
 		"_hairLine":_hairLine
 	};
 }
-/*
 
-function syncCrossHair(e){
+LineChart.prototype.syncCrossHair=function(anchors,crossHairs,toolTips,adjustingValue,e){
 	var cx;
 	var adjustingValue;
 	var x;
@@ -120,11 +118,6 @@ function syncCrossHair(e){
 	var top,topLimit,bottomLimit,left,leftLimit,rightLimit;
 	var x;	
 	var keyIndex;
-	var chartAreaRect=document.getElementsByClassName("chartArea");
-	var crossHair=document.getElementsByClassName("HairLine");
-
-	var tooltip=document.getElementsByClassName("tooltip");
-	var tooltipText=document.getElementsByClassName("tooltipText");
 	var x1,y1,y2,rectX,rectWidth;
 	var textLength;
 	var padding;
@@ -132,171 +125,151 @@ function syncCrossHair(e){
 	var pointX,pointY;
 	var parentOffset;
 	var rect;	
+	var r;
+	var limits={};
+	var posToolTips;
+	var tooltipText;
+	var toolTipSize={};
+
 	padding=10;
 	tooltipHeight=25;	
-	adjustingValue=this.parsedJSON.chart.marginX;
+	
 	x=e.detail.x+adjustingValue;
-	for(var i=0; i<this._crossHair.length; i++){
-		this._crossHair[i]._hairLine.graphics.setAttribute("visibility","visible");
-		this._crossHair[i]._hairLine.setAttribute("x1",x);
-		this._crossHair[i]._hairLine.setAttribute("x2",x);	
-		for(var j=0; j< this._anchors[i].length; j++){
-			cx=this._anchors[i][j].getAttribute("cx");
-			if((x-5)<=cx && (x+5)>=cx){
-				this._anchors[i][j].setAttribute("r",7);
-				this._anchors[i][j].setAttribute("style","fill:#f44336")
-				this._tooltip[i].text.innerHTML=this._anchors[i][j].getAttribute("Ydata");
-			}else{
-				this._anchors[i][j].setAttribute("r",5);
-				this._anchors[i][j].setAttribute("style","fill:#ffffff");
-			}			
-		}
-		this._tooltip[i].rect.setAttribute("visibility","hidden");
-		this._tooltip[i].text.setAttribute("visibility","hidden");
-	}
 
+	for(var i=0, len=crossHairs.length; i<len; i++){	
+		crossHairs[i]._hairLine.graphics.setAttribute("visibility","visible");
+		crossHairs[i]._hairLine.graphics.setAttribute("x1",x);
+		crossHairs[i]._hairLine.config.x1=x;
+		crossHairs[i]._hairLine.graphics.setAttribute("x2",x);
+		crossHairs[i]._hairLine.config.x2=x;
 
-	for (var i=0; i<crossHair.length; i++){	
-		crossHair[i].setAttribute("visibility","visible");	
-		tooltip[i].setAttribute("visibility","hidden");
-		tooltipText[i].setAttribute("visibility","hidden");
-		rectX=parseInt(chartAreaRect[i].getAttribute("x"));
+		toolTips[i].rect.graphics.setAttribute("visibility","hidden");
+		toolTips[i].text.graphics.setAttribute("visibility","hidden");
 
+		rectX= parseInt(crossHairs[i]._chartArea.config.x);
+		rectWidth= parseInt(crossHairs[i]._chartArea.config.width);
 
-		x1=parseInt(crossHair[i].getAttribute("x1"));
-		y1=parseInt(crossHair[i].getAttribute("y1"));
-		y2=parseInt(crossHair[i].getAttribute("y2"));
-		
-		rectWidth= parseInt(chartAreaRect[i].getAttribute("width"));
+		x1= parseInt(crossHairs[i]._hairLine.config.x1);
+		y1= parseInt(crossHairs[i]._hairLine.config.y1);
+		y2= parseInt(crossHairs[i]._hairLine.config.y2);
+
 		leftLimit=rectX;
 		rightLimit=rectX+rectWidth;
 		topLimit=y1;
 		bottomLimit=y2;
 
-		keyIndex=bSearch(DataSet[i],x1);
+		limits.bottomLimit=bottomLimit;
+		limits.rightLimit=rightLimit;
+		limits.topLimit=topLimit;
 
-		if(keyIndex>=0){
-			left=DataSet[i][keyIndex][2];
-			top=DataSet[i][keyIndex][3];
-			
-			textLength=tooltipText[i].innerHTML.toString().length;
-			tooltipWidth=textLength*padding+2*padding;
+		toolTipSize.tooltipHeight=tooltipHeight;
 
-			tooltip[i].setAttribute("width",tooltipWidth.toString());
-			tooltip[i].setAttribute("height",tooltipHeight);
-
-			tooltipText[i].innerHTML=DataSet[i][keyIndex][1].toString();
-
-			pointX=left+5;
-			pointY=top-5;					
-			if((rightLimit -25) <(left+tooltipWidth)){
-
-				pointX=left-tooltipWidth-10;
-			}
-
-			if((top+tooltipHeight+5)>(bottomLimit)){
-				pointY=top+tooltipHeight;
-				while((pointY+tooltipHeight+5)>=(bottomLimit)){
-					pointY--;					
-				}											
-			}
-
-			if((top)< (topLimit +5)){
-				pointY=top;
-				while(pointY<=topLimit+15){					
-					pointY++;
-				}
-			}				
-
-			tooltip[i].setAttribute("x",pointX);
-			tooltipText[i].setAttribute("x",(pointX+Math.floor((tooltipWidth-(textLength*padding))/2)));
-
-			tooltip[i].setAttribute("y",pointY-10);
-			tooltipText[i].setAttribute("y",(pointY+7));
-
-			tooltip[i].setAttribute("visibility","visible");
-			tooltipText[i].setAttribute("visibility","visible");
-			
-		} else{				
-			keyIndex= Math.abs(keyIndex) -1;
-
-			if(x1 < DataSet[i][DataSet[i].length-1][2] && x1 > DataSet[i][0][2]) {
-				if(x1 > DataSet[i][keyIndex][2]) {
-					index1=keyIndex;
-					index2=keyIndex+1;
-				} else {
-					index1=keyIndex-1;
-					index2=keyIndex;
-				}
-				sX1=DataSet[i][index1][2];
-				sY1=DataSet[i][index1][3];
-				sX2=DataSet[i][index2][2];
-				sY2=DataSet[i][index2][3];
-
-				slop=((sY2-sY1)/(sX2-sX1)).toFixed(3);
-				cValue=(sY2- slop*sX2);
-				yValue=Math.abs((slop* x1) + cValue);					
-				xRatio=(DataSet[i][index2][1]-DataSet[i][index1][1])/Math.abs(sX1-sX2);
-				if(DataSet[i][index2][1]%1 !=0)
-					fixedDecimal=(DataSet[i][index2][1]%1).toString().length;
-				else
-					fixedDecimal=0;
-				tooltipText[i].innerHTML=((DataSet[i][index1][1] + xRatio* Math.abs(sX1-x1)).toFixed(fixedDecimal)).toString();
-
-				top=Math.floor(yValue);
-				left=x1;
-				textLength=tooltipText[i].innerHTML.toString().length;
+		for(var j=0; j< anchors[i].length; j++){
+			cx=anchors[i][j].config.cx;
+			r=anchors[i][j].config.r;
+			if((x-r)<=cx && (x+r)>=cx){
+				anchors[i][j].graphics.setAttribute("r",6);
+				anchors[i][j].config.r=6;
+				anchors[i][j].graphics.setAttribute("style","fill:#f44336")
+				toolTips[i].text.graphics.innerHTML=anchors[i][j].config.Ydata;
+				textLength=anchors[i][j].config.Ydata.toString().length;
 
 				tooltipWidth=textLength*padding+2*padding;
+				toolTips[i].rect.graphics.setAttribute("width",tooltipWidth.toString());
+				toolTips[i].rect.graphics.setAttribute("height",tooltipHeight);			
 
-				tooltip[i].setAttribute("width",tooltipWidth.toString());
-				tooltip[i].setAttribute("height",tooltipHeight);
+				toolTipSize.tooltipWidth=tooltipWidth;
+				left=anchors[i][j].config.cx;
+				top=anchors[i][j].config.cy;
+				posToolTips=placeTooltip(limits,left,top,toolTipSize);
 
-				pointX=left+5;
+				toolTips[i].rect.graphics.setAttribute("x",posToolTips.pointX);
+				toolTips[i].rect.graphics.setAttribute("y",posToolTips.pointY-10);
 
-				pointY=top-5;			
+				toolTips[i].text.graphics.setAttribute("x",(posToolTips.pointX+Math.floor((tooltipWidth-(textLength*padding))/2)));
+				toolTips[i].text.graphics.setAttribute("y",(posToolTips.pointY+7));			
 
-				if((rightLimit -25) <(left+tooltipWidth)){
+				toolTips[i].rect.graphics.setAttribute("visibility","visible");
+				toolTips[i].text.graphics.setAttribute("visibility","visible");
 
-					pointX=left-tooltipWidth-10;
-				}
+			}else{
+				anchors[i][j].graphics.setAttribute("r",5);
+				anchors[i][j].config.r=5;
+				anchors[i][j].graphics.setAttribute("style","fill:#ffffff");
+				if(j>0){
+					if(anchors[i][j-1].config.cx < x && anchors[i][j].config.cx > x){						
+						sX1= anchors[i][j-1].config.cx;
+						sY1= anchors[i][j-1].config.cy;
+						sX2= anchors[i][j].config.cx;
+						sY2= anchors[i][j].config.cy;
+						slop=((sY2-sY1)/(sX2-sX1)).toFixed(3);
+						cValue=(sY2- slop*sX2);
+						yValue=Math.abs((slop* x1) + cValue);	
+						xRatio=(anchors[i][j].config.Ydata - anchors[i][j-1].config.Ydata)/Math.abs(sX1-sX2);		
 
-				if((top+tooltipHeight+5)>(bottomLimit)){
-					pointY=top+tooltipHeight;
-					while((pointY+tooltipHeight+5)>=(bottomLimit)){
-						pointY--;					
-					}											
-				}
+						if(anchors[i][j].config.Ydata %1 !=0)	
+							fixedDecimal=(anchors[i][j].config.Ydata % 1).toString().length;
+						else
+							fixedDecimal=0;	
+						tooltipText=((anchors[i][j-1].config.Ydata + xRatio* Math.abs(sX1-x1)).toFixed(fixedDecimal)).toString();							
+						toolTips[i].text.graphics.innerHTML=tooltipText;						
+						textLength=tooltipText.length;
+						tooltipWidth=textLength*padding+2*padding;
+					
+						toolTipSize.tooltipWidth=tooltipWidth;
+						
+						top=Math.floor(yValue);
+						left=x1;
+						posToolTips=placeTooltip(limits,left,top,toolTipSize);
 
-				if((top)< (topLimit +5)){
-					pointY=top;
-					while(pointY<=topLimit+15){					
-						pointY++;
+						toolTips[i].rect.graphics.setAttribute("width",tooltipWidth.toString());
+						toolTips[i].rect.config.width=tooltipWidth.toString();
+
+						toolTips[i].rect.graphics.setAttribute("height",tooltipHeight);		
+						toolTips[i].rect.config.height=tooltipHeight;
+
+						toolTips[i].rect.graphics.setAttribute("x",posToolTips.pointX);
+						toolTips[i].rect.graphics.setAttribute("y",posToolTips.pointY-10);
+
+						toolTips[i].rect.config.x=posToolTips.pointX;
+						toolTips[i].rect.config.y=posToolTips.pointY;
+
+						toolTips[i].text.graphics.setAttribute("x",(posToolTips.pointX+Math.floor((tooltipWidth-(textLength*padding))/2)));
+						toolTips[i].text.graphics.setAttribute("y",(posToolTips.pointY+7));			
+
+						toolTips[i].text.config.x=(posToolTips.pointX+Math.floor((tooltipWidth-(textLength*padding))/2));
+						toolTips[i].text.config.y=(posToolTips.pointY+7);
+
+						toolTips[i].rect.graphics.setAttribute("visibility","visible");
+						toolTips[i].text.graphics.setAttribute("visibility","visible");						
 					}
-				}				
-
-				tooltip[i].setAttribute("x",pointX);
-				tooltipText[i].setAttribute("x",(pointX+Math.floor((tooltipWidth-(textLength*padding))/2)));
-
-				tooltip[i].setAttribute("y",(pointY-10));
-				tooltipText[i].setAttribute("y",(pointY+7));
-
-				tooltip[i].setAttribute("visibility","visible");
-				tooltipText[i].setAttribute("visibility","visible");
-
-			} else {
-				tooltip[i].setAttribute("visibility","hidden");
-				tooltipText[i].setAttribute("visibility","hidden");
-			}
+				}
+			}	
 		}
 	}
 }
-*/
-LineChart.prototype.reset=function(plotpoints){	
-	for(var i=0,len=plotpoints.length; i< len; i++){
-		for(var j=0, len1=plotpoints[i].length; j<len1; j++){
-			plotpoints[i][j].graphics.setAttribute("fill","#ffffff");;				
-			plotpoints[i][j].graphics.setAttribute("r",4);
+
+LineChart.prototype.hideCrossHair=function(anchors,crossHairs,toolTips,e){
+	for(var i=0, len=anchors.length; i< len; i++){
+		crossHairs[i]._hairLine.graphics.setAttribute("visibility","hidden");
+		crossHairs[i]._hairLine.graphics.setAttribute("x1","1");
+		crossHairs[i]._hairLine.graphics.setAttribute("x2","1");
+
+		toolTips[i].rect.graphics.setAttribute("visibility","hidden");
+		toolTips[i].text.graphics.setAttribute("visibility","hidden");
+		for(var j=0, len1=anchors[i].length; j<len1; j++){
+			anchors[i][j].graphics.setAttribute("style","fill:#ffffff");
+			anchors[i][j].graphics.setAttribute("r",5);
+			anchors[i][j].config.r=5;
+		}
+	}
+}
+
+LineChart.prototype.reset=function(plotPoints){	
+	for(var i=0,len=plotPoints.length; i< len; i++){
+		for(var j=0, len1=plotPoints[i].length; j<len1; j++){
+			plotPoints[i][j].graphics.setAttribute("style","fill:#ffffff");			
+			plotPoints[i][j].graphics.setAttribute("r",5);
 		}
 	}		
 }
@@ -310,15 +283,13 @@ LineChart.prototype.select=function(plotPoints){
 	var x,y;		
 		
 	for(var i=0,len=plotPoints.length; i< len; i++) {
-		for(var j=0,len1=plotpoints[i].length; j<len1; j++) {
+		for(var j=0,len1=plotPoints[i].length; j<len1; j++) {
 			x=Number(plotPoints[i][j].config.absoluteX);
 			y=Number(plotPoints[i][j].config.absoluteY);
 
 			if(x>=x1 && x<=x2 && y>=y1 && y<=y2) {
-
 				plotPoints[i][j].graphics.setAttribute("fill","#f44336");
 				plotPoints[i][j].graphics.setAttribute("r",6);	
-
 				if(minX>Number(plotPoints[i][j].config.cx))
 					minX=Number(plotPoints[i][j].config.cx);
 
@@ -329,7 +300,7 @@ LineChart.prototype.select=function(plotPoints){
 	}
 
 	for(var i=0,len=plotPoints.length; i< len; i++) {
-		for(var j=0,len1=plotpoints[i].length; j<len1; j++) {
+		for(var j=0,len1=plotPoints[i].length; j<len1; j++) {
 			if(minX <= Number(plotPoints[i][j].config.cx) && Number(plotPoints[i][j].config.cx) <= maxX){
 				plotPoints[i][j].graphics.setAttribute("style","fill:#f44336");
 				plotPoints[i][j].graphics.setAttribute("r",6);	

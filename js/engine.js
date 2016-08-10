@@ -1,8 +1,5 @@
 /*--------Engine start---------*/
-function Engine(rawJSON,selector){
-
-	
-	
+function Engine(rawJSON,selector){		
 	this._drawComponents=[];
 	this._crossHair=[],
 	this._anchors=[];
@@ -35,6 +32,7 @@ Engine.prototype.lineChart=function(){
 	var count=0;
 	var _this=this;
 	var drawComponent;
+	var left;
 	if(typeof this.customSort == "function"){
 		this.customSort();
 	}
@@ -77,13 +75,25 @@ Engine.prototype.lineChart=function(){
 		point0.x=0;
 		point0.y=0;
 		this._tooltips[i]=tooltip(this._drawComponents[i],point0,"tooltip","tooltipText");
-			
+					
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouserollover",_lineChart.syncCrossHair.bind(null,this._anchors,this._crossHair,this._tooltips,this.parsedJSON.chart.marginX));		
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouseout",_lineChart.hideCrossHair.bind(null,this._anchors,this._crossHair,this._tooltips));		
+
 		this._drawComponents[i].svg.addEventListener("mousedown",_lineChart.drawSelectSpace.bind(_lineChart,this._anchors));
-		this._drawComponents[i].svg.addEventListener("mousemove",_lineChart.resizeSelectSpace.bind(_lineChart));
+		this._drawComponents[i].svg.addEventListener("mousemove",_lineChart.resizeSelectSpace.bind(_lineChart,this._anchors));
 		this._drawComponents[i].svg.addEventListener("mouseup",_lineChart.destroySelectSpace.bind(null));	
 		this._drawComponents[i].svg.addEventListener("mouseleave",_lineChart.destroySelectSpace.bind(null));			
 	}		
 }
+
+/*Engine.prototype.crossHairHandler=function(){
+	var _this=this;
+	var noChart=this.parsedJSON.chart.yMap.length;
+	for(var i=0; i<noChart; i++){
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouserollover",syncCrossHair.bind(_this));		
+		this._crossHair[i]._chartArea.graphics.addEventListener("mouseout",hideCrossHair);		
+	}	
+}*/
 
 Engine.prototype.columnChart=function(){
 	var noChart;
@@ -156,15 +166,6 @@ Engine.prototype.columnChart=function(){
 			this._columns[i][j].graphics.addEventListener("mouserollover",_columnChart.highlightColumn.bind(null,this._columns,this._tooltips,limits),false);
 			this._columns[i][j].graphics.addEventListener("mouseout",_columnChart.unfocus.bind(null,this._columns,this._tooltips),false);
 		}		
-	}	
-}
-
-Engine.prototype.crossHairHandler=function(){
-	var _this=this;
-	var noChart=this.parsedJSON.chart.yMap.length;
-	for(var i=0; i<noChart; i++){
-		this._crossHair[i]._chartArea.graphics.addEventListener("mouserollover",syncCrossHair.bind(_this));		
-		this._crossHair[i]._chartArea.graphics.addEventListener("mouseout",hideCrossHair);		
 	}	
 }
 

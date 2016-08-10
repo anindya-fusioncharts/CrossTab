@@ -31,6 +31,50 @@ function dragBox(){
 	document.body.appendChild(selectSpace);
 }
 
+function placeTooltip(limits,left,top,toolTipSize){
+
+	var rightLimit,
+		bottomLimit,
+		topLimit,
+		tooltipHeight,
+		tooltipWidth;
+
+	var pointX,
+		pointY;
+
+	pointX=left+5;
+	pointY=top-5;
+	bottomLimit=limits.bottomLimit;
+	rightLimit=limits.rightLimit;
+	topLimit=limits.topLimit;
+	tooltipWidth=toolTipSize.tooltipWidth;
+	tooltipHeight=toolTipSize.tooltipHeight;
+
+	if((rightLimit -25) <(left+tooltipWidth)){
+
+		pointX=left-tooltipWidth-10;
+	}
+
+	if((top+tooltipHeight+5)>(bottomLimit)){
+		pointY=top+tooltipHeight;
+		while((pointY+tooltipHeight+5)>=(bottomLimit)){
+			pointY--;					
+		}											
+	}
+
+	if((top)< (topLimit +5)){
+		pointY=top;
+		while(pointY<=topLimit+15){					
+			pointY++;
+		}
+	}		
+
+	return {
+		pointX : pointX,
+		pointY : pointY
+	};
+}
+
 function numberShrink(num){
 	var tickText;
 	if(Math.abs(num)>=1000 && Math.abs(num)<1000000){			
@@ -494,31 +538,6 @@ function xRangeTicks(parsedJSON){
 	return ticks;		
 }
 
-function bSearch(data,key){
-	var minIndex = 0;
-    var maxIndex = data.length - 1;
-    var currentIndex;
-    var currentElement;
- 	
-    while (minIndex <= maxIndex) {
-        currentIndex = Math.floor((minIndex + maxIndex) / 2);
-        currentElement = data[currentIndex][2];
-
-        if ((currentElement+5) < key) {
-            minIndex = currentIndex + 1;
-        }
-        else if ((currentElement-5) > key) {
-            maxIndex = currentIndex - 1;
-        }
-        else {
-            return currentIndex;
-        }
-    }	 
-    return -1*(currentIndex+1);
-}
-
-
-
 function crosstabYticks(data){
 	var max=-9999999999,
 		min=0;
@@ -565,19 +584,6 @@ function getGradient(color1,color2,ratio){
 
     var middle = hex(r) + hex(g) + hex(b);
     return middle;
-}
-
-function rgb(str){
-    return str.match(/\w\w/g).map(function(b){ return parseInt(b,16) })
-}
-
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-		        r: parseInt(result[1], 16),
-		        g: parseInt(result[2], 16),
-		        b: parseInt(result[3], 16)
-		    } : null;
 }
 
 /*-------global functions end----------------*/

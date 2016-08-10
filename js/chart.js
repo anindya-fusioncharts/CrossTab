@@ -60,7 +60,7 @@ Chart.prototype.resizeSelectSpace=function(elements,event){
 			selectSpace.style.height=Math.abs(y- event.pageY)+ "px";
 		}
 		this.select(elements);
-												
+
 	}	
 }
 

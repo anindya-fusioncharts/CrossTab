@@ -35,7 +35,6 @@ LineChart.prototype.anchor=function(){
 	var svgLeft,svgTop;
 	svgLeft=parseInt(this.drawComponents.svg.getBoundingClientRect().left);
 	svgTop=parseInt(this.drawComponents.svg.getBoundingClientRect().top);
-	DataSet[this.index]=[];
 	for(var i=0; i< this.parsedJSON.data[this.index].length; i++){
 		x=this.parsedJSON.data[this.index][i][0];
 		y=this.parsedJSON.data[this.index][i][1];
@@ -44,12 +43,6 @@ LineChart.prototype.anchor=function(){
 		point=this.drawComponents.coordinate(point.x,point.y);
 
 		anchor[i]=this.drawComponents.drawCircle(point,5,"plotPoint",x,y,(svgLeft+point.x),(svgTop+point.y));
-		
-		DataSet[this.index][i]=[];
-		DataSet[this.index][i][0]=this.parsedJSON.data[this.index][i][0];
-		DataSet[this.index][i][1]=this.parsedJSON.data[this.index][i][1];
-		DataSet[this.index][i][2]=point.x;
-		DataSet[this.index][i][3]=point.y;	
 	}
 	return anchor;	
 }
@@ -309,4 +302,3 @@ LineChart.prototype.select=function(plotPoints){
 		}
 	}
 }
-

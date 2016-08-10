@@ -1,5 +1,4 @@
 /*--------drawcomponent start------------------------*/
-
 function DrawComponents(selector,width,height,marginX,marginY,topMarginY,noPercent){
 	var percntWidth;
 	this.marginX=marginX;
@@ -171,10 +170,4 @@ DrawComponents.prototype.drawRect=function(x,y,classIn,h,w,style,value,absoluteX
 			graphics:rect
 		};
 }
-
 /*------drawcomponent end-------*/
-
-
-
-
-

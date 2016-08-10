@@ -1,12 +1,11 @@
 "use strict";
-
 /*-------global functions and variables start-----------*/
 var noChartRow;
 var chartType;
-var DataSet=[];
 var selectSpace;
 var mousedown=false;
 var mouseLeft, mouseTop;
+
 function tickspoistion(parsedJSON){
 	var percntWidth;
 	percntWidth=Math.ceil((parsedJSON.chart.width)/window.innerWidth*100);
@@ -568,7 +567,6 @@ function crosstabYticks(data){
 	return ticks;
 }
 
-
 function getGradient(color1,color2,ratio){
     color1 = color1.substring(1,color1.length);
     color2 = color2.substring(1,color2.length);
@@ -586,6 +584,18 @@ function getGradient(color1,color2,ratio){
     return middle;
 }
 
+function formatDate(dateMax,dateMin,date){
+	var xDiff=dateMax.getTime() - dateMin.getTime();
+	if(xDiff<(1000*3600*24) && dateMax.getDate()==dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
+		return date.toString().split(' ')[4];
+	if(dateMax.getDate()!=dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
+		return (date.toString().split(' ')[0]);
+	if(dateMax.getMonth()!=dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
+		return (date.toString().split(' ')[1]+ "'"+date.toString().split(' ')[2]);
+	if(dateMax.getFullYear()!=dateMin.getFullYear())
+		return (date.toString().split(' ')[1]+ "'"+date.toString().split(' ')[2] + ","+date.toString().split(' ')[3][2]+''+date.toString().split(' ')[3][3]);
+	return date;
+}
 /*-------global functions end----------------*/
 
 /*---------custom event listener start--------------*/

@@ -54,6 +54,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				
 				this.drawcomponents.drawLine(point1,point2,"xAxis");
 				xTickStr=formatDate(dateMax,dateMin,tickList[i]);
+
 				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");				
 			}					
 		}
@@ -64,15 +65,14 @@ XAxis.prototype.draw=function(){
 	this.xAxisTicksText(this.chartCount,this.parsedJSON.TickList.xAxis,this.tickPosDown);
 }
 
-function formatDate(dateMax,dateMin,date){
-	var xDiff=dateMax.getTime() - dateMin.getTime();
-	if(xDiff<(1000*3600*24) && dateMax.getDate()==dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-		return date.toString().split(' ')[4];
-	if(dateMax.getDate()!=dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-		return (date.toString().split(' ')[0]);
-	if(dateMax.getMonth()!=dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-		return (date.toString().split(' ')[1]+ "'"+date.toString().split(' ')[2]);
-	if(dateMax.getFullYear()!=dateMin.getFullYear())
-		return (date.toString().split(' ')[1]+ "'"+date.toString().split(' ')[2] + ","+date.toString().split(' ')[3][2]+''+date.toString().split(' ')[3][3]);
-	return date;
+
+function HorizontalAxis(parsedJSON,drawComponents,chartCount,tickPosDown){
+	this.parsedJSON=parsedJSON;
+	this.chartCount=chartCount;
+	this.tickPosDown=tickPosDown;
+	Axis.call(this,drawComponents);
+}
+
+HorizontalAxis.prototype.line=function(){
+	
 }

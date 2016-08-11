@@ -35,15 +35,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				this.drawcomponents.drawLine(point1,point2,"xAxis");
 
 				xTickStr=formatDate(dateMax,dateMin,tickList[i]);
-				/*if(xDiff<(1000*3600*24) && dateMax.getDate()==dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[4];
-				if(dateMax.getDate()!=dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[0];
-				if(dateMax.getMonth()!=dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[1]+ "'"+tickList[i].toString().split(' ')[2];
-				if(dateMax.getFullYear()!=dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[1]+ "'"+tickList[i].toString().split(' ')[2] + ","+tickList[i].toString().split(' ')[3][2]+''+tickList[i].toString().split(' ')[3][3];					
-*/				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");					
+				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");					
 			}
 			noChartRow--;
 		}
@@ -62,16 +54,6 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				
 				this.drawcomponents.drawLine(point1,point2,"xAxis");
 				xTickStr=formatDate(dateMax,dateMin,tickList[i]);
-/*
-				if(xDiff<(1000*3600*24) && dateMax.getDate()==dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[4];
-				if(dateMax.getDate()!=dateMin.getDate() && dateMax.getMonth()==dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[0];
-				if(dateMax.getMonth()!=dateMin.getMonth() && dateMax.getFullYear()==dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[1]+ "'"+tickList[i].toString().split(' ')[2];
-				if(dateMax.getFullYear()!=dateMin.getFullYear())
-					xTickStr=tickList[i].toString().split(' ')[1]+ "'"+tickList[i].toString().split(' ')[2] + ","+tickList[i].toString().split(' ')[3][2]+''+tickList[i].toString().split(' ')[3][3];					
-				*/
 				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");				
 			}					
 		}

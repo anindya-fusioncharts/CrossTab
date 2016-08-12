@@ -6,6 +6,7 @@
 </head>
 <body>
 <script type="text/javascript" src="js/globalFunctions.js"></script>
+<script type="text/javascript" src="js/parse.js"></script>
 <script type="text/javascript" src="js/engine.js"></script>
 <script type="text/javascript" src="js/drawingComponents.js"></script>
 <script type="text/javascript" src="js/chart.js"></script>
@@ -29,7 +30,7 @@
          render(data,'chart');
       }
    };
-   xhttp.open("GET", "rsc/dataJson.json", true);
+   xhttp.open("GET", "rsc/trellis.json", true);
    xhttp.send();
 </script>
 </body>

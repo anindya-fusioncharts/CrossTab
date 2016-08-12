@@ -7,6 +7,62 @@ function XAxis(parsedJSON,drawComponents,chartCount,tickPosDown){
 	Axis.call(this,drawComponents);
 }
 
+
+XAxis.prototype.xRangeTicks=function(){
+	var parsedJSON=this.parsedJSON;
+	var diff, diffDigit;
+	var interval;
+	var index;
+	var tickValue;
+	var ticks=[];
+	var xMax,xMin;
+	var intermediateDate;
+	var fixedDecimal;
+
+	xMax=undefined;
+	xMin=undefined;
+	
+	for (var i=0,k=0; i<parsedJSON.data.length; i++){	
+		for(var j=0;j<parsedJSON.data[i].length; j++) {
+			if(xMax==undefined && xMin==undefined){
+				xMax=new Date(parsedJSON.data[i][j][0]);
+				xMin=new Date(parsedJSON.data[i][j][0]);
+			}
+			var date=new Date(parsedJSON.data[i][j][0]);
+			if(xMax < date)
+				xMax=date;
+			if(xMin > date)
+				xMin=date;
+
+			k++;
+		}
+	}
+	diff=xMax.getTime() - xMin.getTime();
+	
+	if(parsedJSON.chart.height>=800)
+		interval=10;
+	if(k<=10 && parsedJSON.chart.height<800)
+		interval=Math.floor(diff/(k-1));		
+	else
+		interval=Math.floor(diff/9);	
+
+	if(parsedJSON.chart.height<300)
+		interval=6;
+
+	tickValue=xMin;
+	ticks[0]=xMin;
+	for(var i=1 ;tickValue<=xMax; i++){
+		
+		intermediateDate=new Date(parseInt(ticks[i-1].getTime()+ interval)) ;
+		if(intermediateDate<=xMax) {
+			ticks[i]=intermediateDate;
+		}	
+		
+		tickValue=intermediateDate;
+	}
+	return ticks;		
+}
+
 XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 	var x1= -(this.drawcomponents.marginX-this.drawcomponents.paddingX1)-1;
 	var y1=0;
@@ -63,16 +119,4 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 
 XAxis.prototype.draw=function(){
 	this.xAxisTicksText(this.chartCount,this.parsedJSON.TickList.xAxis,this.tickPosDown);
-}
-
-
-function HorizontalAxis(parsedJSON,drawComponents,chartCount,tickPosDown){
-	this.parsedJSON=parsedJSON;
-	this.chartCount=chartCount;
-	this.tickPosDown=tickPosDown;
-	Axis.call(this,drawComponents);
-}
-
-HorizontalAxis.prototype.line=function(){
-	
 }

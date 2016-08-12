@@ -66,9 +66,7 @@ Engine.prototype.lineChart=function(){
 			this.parsedJSON.TickList.xAxis=_xAxis.xRangeTicks();
 			this.parsedJSON.TickList.yAxis=_yAxis.yRangeTicks();
 		}
-		_yAxis.draw();
-
-		
+		_yAxis.draw();	
 		_xAxis.draw();	
 	
 		_lineChart=new LineChart(this._drawComponents[i],this.parsedJSON,i);
@@ -89,15 +87,6 @@ Engine.prototype.lineChart=function(){
 	}		
 }
 
-/*Engine.prototype.crossHairHandler=function(){
-	var _this=this;
-	var noChart=this.parsedJSON.chart.yMap.length;
-	for(var i=0; i<noChart; i++){
-		this._crossHair[i]._chartArea.graphics.addEventListener("mouserollover",syncCrossHair.bind(_this));		
-		this._crossHair[i]._chartArea.graphics.addEventListener("mouseout",hideCrossHair);		
-	}	
-}*/
-
 Engine.prototype.columnChart=function(){
 	var noChart;
 	var tickPosDown;
@@ -115,11 +104,7 @@ Engine.prototype.columnChart=function(){
 
 	this.parsedJSON.TickList={};
 	this.parsedJSON.TickList.xAxis=[];
-	this.parsedJSON.TickList.xAxis=xRangeTicks(this.parsedJSON);
-
 	this.parsedJSON.TickList.yAxis=[];
-	this.parsedJSON.TickList.yAxis=yRangeTicks(this.parsedJSON);
-
 	tickPosDown=tickspoistion(this.parsedJSON);
 	
 	if(tickPosDown){
@@ -147,11 +132,13 @@ Engine.prototype.columnChart=function(){
 		this._drawComponents[i]= new DrawComponents(this.selector,this.parsedJSON.chart.width,this.parsedJSON.chart.height,this.parsedJSON.chart.marginX,this.parsedJSON.chart.marginY,this.parsedJSON.chart.topMarginY);
 		
 		_yAxis=new YAxis(this.parsedJSON,this._drawComponents[i],i,tickPosDown);
-		_yAxis.draw();
-
 		_xAxis=new XAxis(this.parsedJSON,this._drawComponents[i],i+1,tickPosDown);
+		if(i==0){
+			this.parsedJSON.TickList.xAxis=_xAxis.xRangeTicks();
+			this.parsedJSON.TickList.yAxis=_yAxis.yRangeTicks();
+		}
+		_yAxis.draw();	
 		_xAxis.draw();	
-	
 		_columnChart=new Column(this._drawComponents[i],this.parsedJSON,i);
 		
 		this._columns[i]=_columnChart.col(count);

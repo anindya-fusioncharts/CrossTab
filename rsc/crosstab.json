@@ -5,8 +5,8 @@
 		"tab_titles":"region",		
 		"category_name":"Product Type",
 		"sub_category_name":"Product",
-		"maxProfitColor":"#006633",
-		"minProfitColor":"#ff6600",
+		"maxProfitColor":"#000000",
+		"minProfitColor":"#ffffff",
 		"maxLossColor":"#B71C1C",
 		"minLossColor":"#E57373",
 		"numberprefix": "$"

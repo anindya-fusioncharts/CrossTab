@@ -1,7 +1,7 @@
 
 /*---------------render start--------------*/
 window.render=function(rawJSON,selector){
-	/*try {	*/
+	try {	
 		var chart= new Engine(rawJSON,selector);
 		
 		chart.customSort=function(){
@@ -12,9 +12,9 @@ window.render=function(rawJSON,selector){
 		}
 		chart.render();
 
-/*	} catch(err){
+	} catch(err){
 		document.getElementById(selector).innerHTML="Chart can not be rendered.";
-	}*/
+	}
 	
 }
 

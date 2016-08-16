@@ -145,7 +145,6 @@ Column.prototype.reset=function(columns){
 }
 
 Column.prototype.select=function(columns){
-//	var selectSpace=document.getElementById("selectSpace");
 	var x1=parseInt(selectSpace.style.left);
 	var y1=parseInt(selectSpace.style.top);
 	var x2=x1+ parseInt(selectSpace.style.width);

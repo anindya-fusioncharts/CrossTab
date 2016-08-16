@@ -97,6 +97,147 @@ function countDecimals(value) {
     return 0;
 }
 
+function convertIntoNumber(values){
+	for(var i=0, len=values.length; i<len; i++){
+		values[i]= +values[i];
+	}
+	return values;
+}
+
+function convertIntoDate(values){
+	for(var i=0, len=values.length; i<len; i++){
+		values[i]= new Date(values[i]);
+	}
+	return values;
+}
+
+function findMinMax(values){
+	var max,
+		min,
+		maxDec=0,
+		countDec=undefined;
+	for(var i=0, len=values.length; i<len; i++){
+		if(i==0){
+			max=values[0];
+			min=values[0];
+		}
+		if(min>values[i])
+			min=values[i];
+		if(max<values[i])
+			max=values[i];
+		if(!isNan(values[i])){
+			countDec=countDecimals(values[i]);
+			if(maxDec<countDec)
+				maxDec=countDec;
+		}		
+	}
+	if(countDec != undefined)
+		return {
+			min : min,
+			max : max,
+			maxDec : maxDec
+		};
+	else
+		return {
+			min : min,
+			max : max
+		};
+}
+
+function beautifyMinMax(limits){
+	var	negatedmin=0,
+	d,
+	r,
+	count,
+	computedMax,
+	computedMin,
+	decimalFlag=1,
+	index,
+	max_countDecimals=limits.maxDec,
+	min=limits.min,
+	max=limits.max;
+
+	if(min <0) {
+		min*=-1;
+		count=-1;
+		d=min;
+		while(d){
+			r=Math.floor(d%10);
+			d=Math.floor(d/10);
+			count++;
+		}			
+		computedMin=(r+1) * Math.pow(10,count) *-1;
+		negativeFlag=1;
+	} else {
+		count=-1;
+		d=min;
+		while(d){
+			r=Math.floor(d%10);
+			d=Math.floor(d/10);
+			count++;
+		}
+
+		if(count)
+			computedMin=r * Math.pow(10,count);
+		else
+			computedMin=0;
+	}
+
+	if(max<0){
+		max*=-1;
+		count=-1;
+		d=max;
+		while(d){
+			r=Math.floor(d%10);
+			d=Math.floor(d/10);
+			count++;
+		}
+
+		if(count)
+			computedMax=r * Math.pow(10,count);
+		else
+			computedMax=0;			
+	
+	}else{
+		count=-1;
+		d=max;
+		while(d){
+			r=Math.floor(d%10);
+			d=Math.floor(d/10);
+			count++;
+		}			
+		
+		computedMax=(r+1) * Math.pow(10,count);	
+	}
+
+	if(computedMax%1!=0)
+		computedMax=parseInt(computedMax.toString().split('.')[0]+''+computedMax.toString().split('.')[1].substring(0,max_countDecimals));
+
+	if(computedMin%1!=0)
+		computedMin=parseInt(computedMin.toString().split('.')[0]+''+computedMin.toString().split('.')[1].substring(0,max_countDecimals));
+
+
+	if(negativeFlag==1){
+		negatedmin=computedMin;
+		computedMax-=computedMin;
+		computedMin=0;
+	}
+	if(Math.abs(computedMax)<1){
+		decimalFlag=-1;
+	}
+	
+	if(parseInt(computedMax.toString()[1])==0)
+		index=1;
+	if (Math.floor(computedMin/Math.pow(10,(computedMax.toString().length-index)))==0)
+		computedMin=0;
+
+	return {
+		min : computedMin,
+		max : computedMax,
+		decimalFlag : decimalFlag
+	};
+}
+
 function sortByDate(data){
     var swapped;
     do {

@@ -1,10 +1,9 @@
 
 
 function XAxis(parsedJSON,drawComponents,chartCount,tickPosDown){
-	this.parsedJSON=parsedJSON;
 	this.chartCount=chartCount;
 	this.tickPosDown=tickPosDown;
-	Axis.call(this,drawComponents);
+	Axis.call(this,drawComponents,parsedJSON);
 }
 
 
@@ -37,6 +36,7 @@ XAxis.prototype.xRangeTicks=function(){
 			k++;
 		}
 	}
+
 	diff=xMax.getTime() - xMin.getTime();
 	
 	if(parsedJSON.chart.height>=800)
@@ -79,6 +79,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 		if(noChartRow>0) {
 
 			for(var i=0; i<tickList.length; i++){
+				
 				x1=this.drawcomponents.xShift(tickList[i].getTime(),tickList[0].getTime(),xDiff);
 				y1=(this.drawcomponents.height-this.drawcomponents.marginY-this.drawcomponents.topMarginY-8);
 				x2=x1;

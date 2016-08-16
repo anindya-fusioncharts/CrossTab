@@ -14,16 +14,15 @@ function parseJSON(rawJSON,selector){
 		maxLossPrcnt,
 		minProfitPrcnt,
 		minLossPrcnt,
-		percent;
+		percent,
+		xAxisValue=[],
+		flagXvalue;
 
 	maxProfitPrcnt=maxLossPrcnt=minProfitPrcnt=minLossPrcnt=undefined;
 
-		try{
-
+	try{
 		internalDataStructure.chart={};
-
 		internalDataStructure.chart.type=chartType=rawJSON.chart.type;	
-
 		if(internalDataStructure.chart.type=='line' || internalDataStructure.chart.type=='column'){
 			internalDataStructure.chart.caption=rawJSON.chart.caption || "";
 			internalDataStructure.chart.subCaption=rawJSON.chart.subCaption || "";
@@ -60,18 +59,31 @@ function parseJSON(rawJSON,selector){
 			internalDataStructure.chart.yMap=uniqueKeys;
 			internalDataStructure.data=[];
 			
-			for(var i=0; i<internalDataStructure.chart.yMap.length; i++){
+			for(var i=0,l=0; i<internalDataStructure.chart.yMap.length; i++){
 				DataSet[i]=[];
 				for(var j=0,k=0;j<rawJSON.data.length;j++){				
 					if (rawJSON.data[j][internalDataStructure.chart.yMap[i]]!= undefined && rawJSON.data[j][internalDataStructure.chart.xMap] != undefined){
 						DataSet[i][k]=[];
-						DataSet[i][k][0]=new Date(rawJSON.data[j][internalDataStructure.chart.xMap].toString()).getTime();										
+						DataSet[i][k][0]=rawJSON.data[j][internalDataStructure.chart.xMap];
 						DataSet[i][k][1]=rawJSON.data[j][internalDataStructure.chart.yMap[i]];
-						k++;									
+						k++;
+						flagXvalue=0;
+						for(var ii=0,len=xAxisValue.length; ii<len; ii++){
+							if(xAxisValue[ii] == DataSet[i][k][0])
+								flagXvalue=1;
+						}
+
+						if(flagXvalue == 0){
+							xAxisValue[l]=DataSet[i][k][0];
+							l++;
+						}
+										
 					}											
 				}
 				DataSet[i]=sortByDate(DataSet[i]);
-			}		
+			}	
+			internalDataStructure.chart.xAxisValue=xAxisValue;
+				
 		} else if(internalDataStructure.chart.type=='crosstab'){
 			if(!rawJSON.chart.category_name){						
 				throw new Error("Chart can not be rendered");

@@ -63,7 +63,7 @@ Engine.prototype.lineChart=function(){
 		_yAxis=new YAxis(this.parsedJSON,this._drawComponents[i],i,tickPosDown);
 		_xAxis=new XAxis(this.parsedJSON,this._drawComponents[i],i+1,tickPosDown);
 		if(i==0){
-			this.parsedJSON.TickList.xAxis=_xAxis.xRangeTicks();
+			this.parsedJSON.TickList.xAxis=_xAxis.checkAxisType();
 			this.parsedJSON.TickList.yAxis=_yAxis.yRangeTicks();
 		}
 		_yAxis.draw();	

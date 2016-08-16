@@ -1,8 +1,10 @@
 /*-----------Line Chart--------------*/ 
-function LineChart(drawComponents,parsedJSON,index){
+function LineChart(drawComponents,parsedJSON,index,xAxisType){
 	this.index=index;		
 	Chart.call(this,drawComponents,parsedJSON);
-	this.xDiff=this.parsedJSON.TickList.xAxis[this.parsedJSON.TickList.xAxis.length-1].getTime()-this.parsedJSON.TickList.xAxis[0].getTime();
+	if(xAxisType == 'date')
+		this.xDiff=this.parsedJSON.TickList.xAxis[this.parsedJSON.TickList.xAxis.length-1].getTime()-this.parsedJSON.TickList.xAxis[0].getTime();
+	// if(xAxisType)
 	this.yDiff=this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[index].length-1]-this.parsedJSON.TickList.yAxis[this.index][0];	
 }
 

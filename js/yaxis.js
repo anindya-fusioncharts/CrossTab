@@ -115,10 +115,11 @@ YAxis.prototype.yRangeTicks=function(){
 			index=2;
 
 
+
+			diffDigit=Math.floor(computedMax/Math.pow(10,(computedMax.toString().length-index)))-Math.floor(computedMin/Math.pow(10,(computedMax.toString().length-index)));
+			
 			if(parseInt(computedMax.toString()[1])==0)
 				index=1;
-			diffDigit=Math.floor(computedMax/Math.pow(10,(computedMax.toString().length-index)))-Math.floor(computedMin/Math.pow(10,(computedMax.toString().length-index)));
-
 			if (Math.floor(computedMin/Math.pow(10,(computedMax.toString().length-index)))==0)
 				computedMin=0;
 
@@ -147,9 +148,9 @@ YAxis.prototype.yRangeTicks=function(){
 
 		tickValue=ticks[i][0];
 		for(var j=1; tickValue<=(computedMax+negatedmin);j++){
-		ticks[i][j]=ticks[i][j-1]  + interval*Math.pow(10,decimalFlag*(computedMax.toString().length-index));		
-		tickValue=ticks[i][j];			
-		}								
+			ticks[i][j]=ticks[i][j-1]  + interval*Math.pow(10,decimalFlag*(computedMax.toString().length-index));		
+			tickValue=ticks[i][j];			
+		}
 	}
 	return ticks;		
 }

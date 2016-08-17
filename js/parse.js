@@ -55,8 +55,7 @@ function parseJSON(rawJSON, selector) {
                             flag = 1;
                         }
                     }
-console.log( keys[j]);
-                    if (flag == 0 && keys[j] != internalDataStructure.chart.xMap /*&& typeof internalDataStructure.data[keys[j]] != 'string'*/) {
+                    if (flag == 0 && keys[j] != internalDataStructure.chart.xMap && typeof rawJSON.data[i][keys[j]] != 'string') {
                         uniqueKeys[k] = keys[j];
                         k++;
 

@@ -1,13 +1,15 @@
 
 
 function XAxis(parsedJSON,drawComponents,chartCount,tickPosDown){
+	this.parsedJSON=parsedJSON;
 	this.chartCount=chartCount;
 	this.tickPosDown=tickPosDown;
-	Axis.call(this,drawComponents,parsedJSON);
+	Axis.call(this,drawComponents);
+	
 }
 
 
-XAxis.prototype.xRangeTicks=function(){
+XAxis.prototype.dateRangeTicks=function(){
 	var parsedJSON=this.parsedJSON;
 	var diff, diffDigit;
 	var interval;
@@ -36,7 +38,6 @@ XAxis.prototype.xRangeTicks=function(){
 			k++;
 		}
 	}
-
 	diff=xMax.getTime() - xMin.getTime();
 	
 	if(parsedJSON.chart.height>=800)
@@ -72,15 +73,29 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 	var xTickStr="";
 	var dateMax=tickList[tickList.length-1];
 	var dateMin=tickList[0];
-	var xDiff=tickList[tickList.length-1].getTime()-tickList[0].getTime();
+	var xDiff;
+
+	var width=this.parsedJSON.chart.width;
+	var xAxisTickList=this.parsedJSON.TickList.xAxis;
+	var colPadding=0;
+	if(this.parsedJSON.chart.type == 'column' && this.parsedJSON.chart.xAxisType !='date'){
+		interval=(width)/(this.parsedJSON.TickList.xAxis.length);
+		colPadding=interval/2-interval/5;	
+	}
+	interval= (width-(colPadding*2))/(this.parsedJSON.TickList.xAxis.length-1);
+
+	if (this.parsedJSON.chart.xAxisType=='date')
+		xDiff=tickList[tickList.length-1].getTime()-tickList[0].getTime();
 
 	if(tickPosDown){				
 
 		if(noChartRow>0) {
 
 			for(var i=0; i<tickList.length; i++){
-				
-				x1=this.drawcomponents.xShift(tickList[i].getTime(),tickList[0].getTime(),xDiff);
+				if (this.parsedJSON.chart.xAxisType=='date')
+					x1=this.drawcomponents.xShift(tickList[i].getTime(),tickList[0].getTime(),xDiff);
+				else
+					x1=xAxisTickList.indexOf(x) * interval + colPadding;
 				y1=(this.drawcomponents.height-this.drawcomponents.marginY-this.drawcomponents.topMarginY-8);
 				x2=x1;
 				y2=(this.drawcomponents.height-this.drawcomponents.marginY-this.drawcomponents.topMarginY);				
@@ -99,7 +114,10 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 	}else{
 		if((this.parsedJSON.chart.yMap.length - chartCount)<noChartRow && (this.parsedJSON.chart.yMap.length - chartCount)>= 0){
 			for(var i=0; i<tickList.length; i++){
-				x1=this.drawcomponents.xShift(tickList[i].getTime(),tickList[0].getTime(),xDiff);
+				if (this.parsedJSON.chart.xAxisType=='date')
+					x1=this.drawcomponents.xShift(tickList[i].getTime(),tickList[0].getTime(),xDiff);
+				else
+					x1=xAxisTickList.indexOf(tickList[i]) * interval  + colPadding;				
 				y1=-(this.drawcomponents.marginY-this.drawcomponents.marginY);
 				x2=x1;
 				y2=-(this.drawcomponents.marginY-this.drawcomponents.marginY+5);				
@@ -110,7 +128,10 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				point2=this.drawcomponents.coordinate(x2,y2);
 				
 				this.drawcomponents.drawLine(point1,point2,"xAxis");
-				xTickStr=formatDate(dateMax,dateMin,tickList[i]);
+				if(this.parsedJSON.chart.xAxisType=='date')
+					xTickStr=formatDate(dateMax,dateMin,tickList[i]);
+				else
+					xTickStr=tickList[i];
 
 				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");				
 			}					

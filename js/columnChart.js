@@ -14,8 +14,8 @@ function Column(drawComponents, parsedJSON, index) {
         this.xDiff = this.parsedJSON.TickList.xAxis[this.parsedJSON.TickList.xAxis.length - 1].getTime() - this.parsedJSON.TickList.xAxis[0].getTime();
     } else {
         this.interval = (width) / (this.parsedJSON.TickList.xAxis.length);
-        this.colPadding = interval / 2 - interval / 5;
-        this.interval = (width - (colPadding * 2)) / (this.parsedJSON.TickList.xAxis.length - 1);
+        this.colPadding = this.interval / 2 - this.interval / 5;
+        this.interval = (width - (this.colPadding * 2)) / (this.parsedJSON.TickList.xAxis.length - 1);
     }
     this.yDiff = this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[index].length - 1] - this.parsedJSON.TickList.yAxis[this.index][0];
 }
@@ -54,7 +54,7 @@ Column.prototype.col = function(count) {
         if (this.parsedJSON.chart.xAxisType == 'date'){
         	x = this.drawComponents.xShift(this.parsedJSON.data[this.index][k][0], this.parsedJSON.TickList.xAxis[0].getTime(), this.xDiff);
         } else {
-        	x= this.xAxisTickList.indexOf(this.parsedJSON.data[this.index][k][0]) * interval  + (this.colPadding- this.colPadding / 7);
+        	x= this.xAxisTickList.indexOf(this.parsedJSON.data[this.index][k][0]) * this.interval  + this.colPadding;
         }
         y = this.drawComponents.yShift(this.parsedJSON.data[this.index][k][1], this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
         point = this.drawComponents.coordinate(x, y);

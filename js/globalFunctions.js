@@ -169,7 +169,7 @@ function formatDate(dateMax, dateMin, date) {
     if (dateMax.getMonth() != dateMin.getMonth() && dateMax.getFullYear() == dateMin.getFullYear())
         return (date.toString().split(' ')[1] + "'" + date.toString().split(' ')[2]);
     if (dateMax.getFullYear() != dateMin.getFullYear())
-        return (date.toString().split(' ')[1] + "'" + date.toString().split(' ')[2] + "," + date.toString().split(' ')[3][2] + '' + date.toString().split(' ')[3][3]);
+        return ((date.getMonth()+1) + "/" + date.toString().split(' ')[2] + "/" + date.toString().split(' ')[3][2] + '' + date.toString().split(' ')[3][3]);
     return date;
 }
 /*-------global functions end----------------*/

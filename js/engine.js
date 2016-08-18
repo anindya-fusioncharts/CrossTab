@@ -33,6 +33,7 @@ Engine.prototype.lineChart = function() {
     var _this = this;
     var drawComponent;
     var left;
+    var paths = [];
     if (typeof this.customSort == "function") {
         this.customSort();
     }
@@ -67,7 +68,7 @@ Engine.prototype.lineChart = function() {
         _xAxis.draw();
 
         _lineChart = new LineChart(this._drawComponents[i], this.parsedJSON, i);
-        _lineChart.path();
+        paths[i] = _lineChart.path();
         this._anchors[i] = _lineChart.anchor();
         this._crossHair[i] = _lineChart.crossHair();
         point0.x = 0;
@@ -81,6 +82,10 @@ Engine.prototype.lineChart = function() {
         this._drawComponents[i].svg.addEventListener("mousemove", _lineChart.resizeSelectSpace.bind(_lineChart, this._anchors));
         this._drawComponents[i].svg.addEventListener("mouseup", _lineChart.destroySelectSpace.bind(null));
         this._drawComponents[i].svg.addEventListener("mouseleave", _lineChart.destroySelectSpace.bind(null));
+        
+        if (this.parsedJSON.chart.animation == true) {
+            _lineChart.animatePath(paths[i],this._anchors[i]);
+        }    
     }
 }
 

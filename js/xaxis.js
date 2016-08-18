@@ -74,6 +74,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 	var dateMax=tickList[tickList.length-1];
 	var dateMin=tickList[0];
 	var xDiff;
+	var interval;
 
 	var width=this.parsedJSON.chart.width;
 	var xAxisTickList=this.parsedJSON.TickList.xAxis;
@@ -99,7 +100,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				y1=(this.drawcomponents.height-this.drawcomponents.marginY-this.drawcomponents.topMarginY-8);
 				x2=x1;
 				y2=(this.drawcomponents.height-this.drawcomponents.marginY-this.drawcomponents.topMarginY);				
-				point=this.drawcomponents.coordinate((x1+2),(y1+this.drawcomponents.marginY+5));
+				point=this.drawcomponents.coordinate((x1+2),y2);
 				
 				point1=this.drawcomponents.coordinate(x1,y1);
 				point2=this.drawcomponents.coordinate(x2,y2);
@@ -122,7 +123,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				x2=x1;
 				y2=-(this.drawcomponents.marginY-this.drawcomponents.marginY+5);				
 				
-				point=this.drawcomponents.coordinate((x1+2),(y1-8));
+				point=this.drawcomponents.coordinate((x1+2),(y2));
 				
 				point1=this.drawcomponents.coordinate(x1,y1);
 				point2=this.drawcomponents.coordinate(x2,y2);
@@ -133,7 +134,7 @@ XAxis.prototype.xAxisTicksText=function(chartCount,tickList,tickPosDown){
 				else
 					xTickStr=tickList[i];
 
-				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText1","270");				
+				this.drawcomponents.drawText(point,".35em",xTickStr,"xAxisTickText2","270");				
 			}					
 		}
 	}	

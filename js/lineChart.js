@@ -14,13 +14,17 @@ LineChart.prototype.path = function() {
     var x, y;
     var point = {};
     var path;
-    var paths;
+    var pathPointString;
+    var pathPoints = [];
     var marginX = this.parsedJSON.chart.marginX;
     var width = this.parsedJSON.chart.width;
     var xAxisTickList = this.parsedJSON.TickList.xAxis;
-    interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
-
-    paths = 'M';
+    var height = this.parsedJSON.chart.height;
+    var marginY = this.parsedJSON.chart.marginY;
+    var topMarginY = this.parsedJSON.chart.topMarginY;
+    var interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
+    midY = (height - marginY + topMarginY) / 2;
+    pathPointString = 'M';
     for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {
         x = this.parsedJSON.data[this.index][i][0];
         y = this.parsedJSON.data[this.index][i][1];
@@ -30,23 +34,81 @@ LineChart.prototype.path = function() {
             point.x = xAxisTickList.indexOf(x) * interval;
         point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
         point = this.drawComponents.coordinate(point.x, point.y);
-        paths = paths + point.x + ' ' + point.y + ', ';
+        pathPointString = pathPointString + point.x + ' ' + point.y + ', ';
+        pathPoints[i] = {};
+        pathPoints[i].x = point.x;
+        pathPoints[i].y = point.y;
     }
-    path = this.drawComponents.drawPath(paths, "path");
+    if (this.parsedJSON.chart.animation == true) {
+        pathPointString = "M";
+        pathPointString = pathPointString + pathPoints[0].x + ' ' + midY + ', ' + pathPoints[pathPoints.length - 1].x + ' ' + midY;
+    }
+    path = this.drawComponents.drawPath(pathPointString, "path", pathPoints, midY);
+
     return path;
+}
+
+LineChart.prototype.animatePath = function(path,anchors) {
+    var finalPoints,
+        x1,
+        x2,
+        step = 100,
+        incrementY = [],
+        midY,
+        immdiatePoints = [],
+        pathString,
+        flagIntervalStop;
+
+    midY = path.config.y;
+    finalPoints = path.config.finalPoints;
+
+    for (var i = 0, len = finalPoints.length; i < len; i++) {
+        immdiatePoints[i] = {};
+        immdiatePoints[i].x = finalPoints[i].x;
+        immdiatePoints[i].y = midY;
+        incrementY[i] = (finalPoints[i].y - midY) / step;
+    }
+
+    var refreshIntervalId = setInterval(function() {
+        pathString = "M";
+        flagIntervalStop=1;
+        for (var i = 0, len = finalPoints.length; i < len; i++) {
+            if (midY < finalPoints[i].y && immdiatePoints[i].y <= finalPoints[i].y){
+                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
+                flagIntervalStop=0;
+            }else if (midY > finalPoints[i].y && immdiatePoints[i].y >= finalPoints[i].y){
+                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
+                flagIntervalStop=0;
+            }else 
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
+        }   
+        if(flagIntervalStop==1){
+            clearInterval(refreshIntervalId);  
+            for(var i=0, len=anchors.length; i<len; i++){   
+                setTimeout(function(){ 
+                    anchors[this].graphics.setAttribute("visibility", "visible");
+                }.bind(i), Math.random()*2000);                              
+            }
+        }
+        else{
+            path.graphics.setAttribute("d", pathString);
+           
+        }
+    }, 10);
 }
 
 LineChart.prototype.anchor = function() {
     var x, y;
-    var point = {};
-    var anchor = [];
+    var point = {};    
     var svgLeft, svgTop;
     var interval;
     var marginX = this.parsedJSON.chart.marginX;
     var width = this.parsedJSON.chart.width;
     var xAxisTickList = this.parsedJSON.TickList.xAxis;
     interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
-
+    this.anchor = [];
     svgLeft = parseInt(this.drawComponents.svg.getBoundingClientRect().left);
     svgTop = parseInt(this.drawComponents.svg.getBoundingClientRect().top);
     for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {
@@ -59,9 +121,12 @@ LineChart.prototype.anchor = function() {
         point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
         point = this.drawComponents.coordinate(point.x, point.y);
 
-        anchor[i] = this.drawComponents.drawCircle(point, 5, "plotPoint", x, y, (svgLeft + point.x), (svgTop + point.y));
+        this.anchor[i] = this.drawComponents.drawCircle(point, 5, "plotPoint", x, y, (svgLeft + point.x), (svgTop + point.y));
+        if (this.parsedJSON.chart.animation == true) {
+            this.anchor[i].graphics.setAttribute("visibility", "hidden");
+        }
     }
-    return anchor;
+    return this.anchor;
 }
 
 LineChart.prototype.chartArea = function() {

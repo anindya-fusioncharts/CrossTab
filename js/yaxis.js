@@ -277,27 +277,27 @@ YAxis.prototype.title = function(tickPosDown, title) {
     var point3;
 
     if (tickPosDown) {
-        point0 = this.drawcomponents.coordinate((0), (-this.drawcomponents.marginY + 2));
+        point0 = this.drawcomponents.coordinate((-1), (-this.drawcomponents.marginY + 2));
         point1 = this.drawcomponents.coordinate((this.drawcomponents.width), (-this.drawcomponents.marginY + 2));
         point2 = this.drawcomponents.coordinate((this.drawcomponents.width), (-this.drawcomponents.marginY + 37));
-        point3 = this.drawcomponents.coordinate((0), (-this.drawcomponents.marginY + 37));
+        point3 = this.drawcomponents.coordinate((-1), (-this.drawcomponents.marginY + 37));
 
         points = point0.x + ',' + point0.y + ' ' + point1.x + ',' + point1.y + ' ' + point2.x + ',' + point2.y + ' ' + point3.x + ',' + point3.y + ' ' + point0.x + ',' + point0.y;
         this.drawcomponents.drawPolygon(points, "titles");
         point = {
-            x: point2.x / 2,
+            x: (point2.x + this.drawcomponents.marginX) / 2,
             y: point2.y + 27
         };
     } else {
-        point0 = this.drawcomponents.coordinate((0), (this.drawcomponents.height - this.drawcomponents.topMarginY - 30));
+        point0 = this.drawcomponents.coordinate((-1), (this.drawcomponents.height - this.drawcomponents.topMarginY - 30));
         point1 = this.drawcomponents.coordinate((this.drawcomponents.width), (this.drawcomponents.height - this.drawcomponents.topMarginY - 30));
         point2 = this.drawcomponents.coordinate((this.drawcomponents.width), (this.drawcomponents.height - this.drawcomponents.topMarginY - 78));
-        point3 = this.drawcomponents.coordinate((0), (this.drawcomponents.height - this.drawcomponents.topMarginY - 78));
+        point3 = this.drawcomponents.coordinate((-1), (this.drawcomponents.height - this.drawcomponents.topMarginY - 78));
 
         points = point0.x + ',' + point0.y + ' ' + point1.x + ',' + point1.y + ' ' + point2.x + ',' + point2.y + ' ' + point3.x + ',' + point3.y + ' ' + point0.x + ',' + point0.y;
         this.drawcomponents.drawPolygon(points, "titles");
         point = {
-            x: point2.x / 2,
+            x: (point2.x + this.drawcomponents.marginX) / 2,
             y: point2.y - 15
         };
     }

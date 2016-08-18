@@ -35,8 +35,9 @@ function parseJSON(rawJSON, selector) {
             internalDataStructure.chart.width = (internalDataStructure.chart.width > 1000 || internalDataStructure.chart.width < 200) ? 500 : internalDataStructure.chart.width;
             internalDataStructure.chart.type = rawJSON.chart.type || "line";
             internalDataStructure.chart.marginX = 80;
-            internalDataStructure.chart.marginY = 20;
+            internalDataStructure.chart.marginY = 50;
             internalDataStructure.chart.topMarginY = 60;
+            internalDataStructure.chart.animation= rawJSON.chart.animation;
             if (rawJSON.chart.xAxisMap == undefined)
                 throw new Error("Chart can not be rendered" + "<br>" + "Error : xAxisMap value is needed");
             internalDataStructure.chart.xMap = rawJSON.chart.xAxisMap;

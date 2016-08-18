@@ -1,0 +1,32 @@
+{
+  "name": "trellis_crosstab",
+  "version": "0.3.11",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "description": "it can render trellis chart and crosstab depending on json structure and type",
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anindya-fusioncharts/CrossTab.git"
+  },
+  "keywords": [
+    "trellis",
+    "crosstab",
+    "multivariate",
+    "data",
+    "visualization",
+    "linechart",
+    "columnchart"
+  ],
+  "author": "Anindya Ghosh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anindya-fusioncharts/CrossTab/issues"
+  },
+  "homepage": "https://github.com/anindya-fusioncharts/CrossTab#readme",
+  "devDependencies": {
+    "gulp-html-replace": "^1.6.1"
+  }
+}

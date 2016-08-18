@@ -1,6 +1,6 @@
 {
     "chart": {
-        "type": "line",
+        "type": "crosstab",
         "titles": "Sum of Sales",
         "tab_titles": "region",
         "category_name": "Product Type",
@@ -9,8 +9,7 @@
         "minProfitColor": "#ffffff",
         "maxLossColor": "#B71C1C",
         "minLossColor": "#E57373",
-        "numberprefix": "$",
-        "xAxisMap": "region"
+        "numberprefix": "$"
     },
     "data": [{
         "category": "Coffee",

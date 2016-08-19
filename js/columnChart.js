@@ -51,10 +51,10 @@ Column.prototype.col = function(count) {
     svgLeft = parseInt(this.drawComponents.svg.getBoundingClientRect().left);
     svgTop = parseInt(this.drawComponents.svg.getBoundingClientRect().top);
     for (var k = 0; k < this.parsedJSON.data[this.index].length; k++) {
-        if (this.parsedJSON.chart.xAxisType == 'date'){
-        	x = this.drawComponents.xShift(this.parsedJSON.data[this.index][k][0], this.parsedJSON.TickList.xAxis[0].getTime(), this.xDiff);
+        if (this.parsedJSON.chart.xAxisType == 'date') {
+            x = this.drawComponents.xShift(this.parsedJSON.data[this.index][k][0], this.parsedJSON.TickList.xAxis[0].getTime(), this.xDiff);
         } else {
-        	x= this.xAxisTickList.indexOf(this.parsedJSON.data[this.index][k][0]) * this.interval  + this.colPadding;
+            x = this.xAxisTickList.indexOf(this.parsedJSON.data[this.index][k][0]) * this.interval + this.colPadding;
         }
         y = this.drawComponents.yShift(this.parsedJSON.data[this.index][k][1], this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
         point = this.drawComponents.coordinate(x, y);
@@ -76,9 +76,47 @@ Column.prototype.col = function(count) {
             point.y -= 3;
             height = 3;
         }
-        column[k] = this.drawComponents.drawRect(x, point.y, "column", height, width, "", this.parsedJSON.data[this.index][k][1], (svgLeft + x), (svgTop + point.y));
+        column[k] = this.drawComponents.drawRect(x, point.y, "column", height, width, "", this.parsedJSON.data[this.index][k][1], (svgLeft + x), (svgTop + point.y), point.y, height);
+        if (this.parsedJSON.chart.animation == true) {
+            column[k].graphics.setAttribute("y", this.parsedJSON.chart.height - this.parsedJSON.chart.marginY);
+            column[k].config.y = this.parsedJSON.chart.height - this.parsedJSON.chart.marginY;
+            column[k].graphics.setAttribute("height", 0);
+            column[k].config.height = 0;
+        }
     }
     return column;
+}
+
+Column.prototype.animateColumn = function(columns) {
+    var incrementY = [],
+        flagIntervalStop,
+        step = 20,
+        delay = 30;
+
+    for (var i = 0, len = columns.length; i < len; i++) {
+        incrementY[i] = (columns[i].config.finalY - columns[i].config.y) / step;   
+    }
+
+    function a() {
+        flagIntervalStop = 1;        
+        for (var i = 0, len = columns.length; i < len; i++) {            
+            if (columns[i].config.y >= columns[i].config.finalY){             
+                columns[i].config.y += incrementY[i];
+                columns[i].config.height += Math.abs(incrementY[i]);
+                columns[i].graphics.setAttribute("y", columns[i].config.y);
+                columns[i].graphics.setAttribute("height", columns[i].config.height);           
+                flagIntervalStop = 0;
+            }
+        }
+        if(flagIntervalStop!==1){
+            setTimeout(a, delay);
+            setTimeout(a, delay);
+        }
+    }
+
+    setTimeout(a, 1);
+
+
 }
 
 Column.prototype.disPatchMouseOver = function(left, top, column, event) {

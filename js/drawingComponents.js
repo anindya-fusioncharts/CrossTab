@@ -146,7 +146,7 @@ DrawComponents.prototype.drawCircle = function(point, r, classIn, Xdata, Ydata, 
     };
 }
 
-DrawComponents.prototype.drawRect = function(x, y, classIn, h, w, style, value, absoluteX, absoluteY) {
+DrawComponents.prototype.drawRect = function(x, y, classIn, h, w, style, value, absoluteX, absoluteY, finalY, finalH) {
         var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         style = style || "stroke:#3E72CC;fill:#3E72CC";
         value = value || "";
@@ -164,6 +164,8 @@ DrawComponents.prototype.drawRect = function(x, y, classIn, h, w, style, value, 
             config: {
                 x: x,
                 y: y,
+                finalY: finalY,
+                finalH: finalH,
                 height: h,
                 width: w,
                 value: value,

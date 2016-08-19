@@ -23,7 +23,7 @@ LineChart.prototype.path = function() {
     var marginY = this.parsedJSON.chart.marginY;
     var topMarginY = this.parsedJSON.chart.topMarginY;
     var interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
-    midY = (height - marginY + topMarginY) / 2;
+    var midY = (height - marginY + topMarginY) / 2;
     pathPointString = 'M';
     for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {
         x = this.parsedJSON.data[this.index][i][0];
@@ -36,7 +36,7 @@ LineChart.prototype.path = function() {
         point = this.drawComponents.coordinate(point.x, point.y);
         pathPointString = pathPointString + point.x + ' ' + point.y + ', ';
         pathPoints[i] = {};
-        pathPoints[i].x = point.x;
+        pathPoints[i].x = point.x;        
         pathPoints[i].y = point.y;
     }
     if (this.parsedJSON.chart.animation == true) {
@@ -89,14 +89,13 @@ LineChart.prototype.animatePath = function(path,anchors) {
             for(var i=0, len=anchors.length; i<len; i++){   
                 setTimeout(function(){ 
                     anchors[this].graphics.setAttribute("visibility", "visible");
-                }.bind(i), Math.random()*2000);                              
+                }.bind(i), Math.random()*500);                              
             }
         }
         else{
-            path.graphics.setAttribute("d", pathString);
-           
+            path.graphics.setAttribute("d", pathString);           
         }
-    }, 10);
+    }, 15);
 }
 
 LineChart.prototype.anchor = function() {
@@ -246,7 +245,7 @@ LineChart.prototype.syncCrossHair = function(anchors, crossHairs, toolTips, adju
             if ((x - r) <= cx && (x + r) >= cx) {
                 anchors[i][j].graphics.setAttribute("r", 6);
                 anchors[i][j].config.r = 6;
-                anchors[i][j].graphics.setAttribute("style", "fill:#f44336")
+                anchors[i][j].graphics.setAttribute("style", "stroke:#f44336");
                 toolTips[i].text.graphics.innerHTML = anchors[i][j].config.Ydata;
                 textLength = anchors[i][j].config.Ydata.toString().length;
 
@@ -271,7 +270,7 @@ LineChart.prototype.syncCrossHair = function(anchors, crossHairs, toolTips, adju
             } else {
                 anchors[i][j].graphics.setAttribute("r", 5);
                 anchors[i][j].config.r = 5;
-                anchors[i][j].graphics.setAttribute("style", "fill:#ffffff");
+                anchors[i][j].graphics.setAttribute("style", "stroke:#7CB5EC");
                 if (j > 0) {
                     if (anchors[i][j - 1].config.cx < x && anchors[i][j].config.cx > x) {
                         sX1 = anchors[i][j - 1].config.cx;
@@ -344,7 +343,7 @@ LineChart.prototype.hideCrossHair = function(anchors, crossHairs, toolTips, e) {
 LineChart.prototype.reset = function(plotPoints) {
     for (var i = 0, len = plotPoints.length; i < len; i++) {
         for (var j = 0, len1 = plotPoints[i].length; j < len1; j++) {
-            plotPoints[i][j].graphics.setAttribute("style", "fill:#ffffff");
+            plotPoints[i][j].graphics.setAttribute("style", "stroke:#f44336");
             plotPoints[i][j].graphics.setAttribute("r", 5);
         }
     }
@@ -365,7 +364,7 @@ LineChart.prototype.select = function(plotPoints) {
             y = Number(plotPoints[i][j].config.absoluteY);
 
             if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-                plotPoints[i][j].graphics.setAttribute("fill", "#f44336");
+                plotPoints[i][j].graphics.setAttribute("style", "stroke:#f44336");
                 plotPoints[i][j].graphics.setAttribute("r", 6);
                 if (minX > Number(plotPoints[i][j].config.cx))
                     minX = Number(plotPoints[i][j].config.cx);
@@ -379,7 +378,7 @@ LineChart.prototype.select = function(plotPoints) {
     for (var i = 0, len = plotPoints.length; i < len; i++) {
         for (var j = 0, len1 = plotPoints[i].length; j < len1; j++) {
             if (minX <= Number(plotPoints[i][j].config.cx) && Number(plotPoints[i][j].config.cx) <= maxX) {
-                plotPoints[i][j].graphics.setAttribute("style", "fill:#f44336");
+                plotPoints[i][j].graphics.setAttribute("style", "stroke:#f44336");
                 plotPoints[i][j].graphics.setAttribute("r", 6);
 
             }

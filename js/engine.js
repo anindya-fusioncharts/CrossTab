@@ -126,8 +126,7 @@ Engine.prototype.columnChart = function() {
     Column.prototype.drawChartHeading.call(_this, this.selector, this.parsedJSON);
 
     noChart = this.parsedJSON.chart.yMap.length;
-    for (var i = 0; i < noChart; i++) {
-        this._anchors[i] = [];
+    for (var i = 0; i < noChart; i++) {        
         this._drawComponents[i] = new DrawComponents(this.selector, this.parsedJSON.chart.width, this.parsedJSON.chart.height, this.parsedJSON.chart.marginX, this.parsedJSON.chart.marginY, this.parsedJSON.chart.topMarginY);
 
         _yAxis = new YAxis(this.parsedJSON, this._drawComponents[i], i, tickPosDown);
@@ -156,6 +155,10 @@ Engine.prototype.columnChart = function() {
             this._columns[i][j].graphics.addEventListener("mouserollover", _columnChart.highlightColumn.bind(null, this._columns, this._tooltips, limits), false);
             this._columns[i][j].graphics.addEventListener("mouseout", _columnChart.unfocus.bind(null, this._columns, this._tooltips), false);
         }
+        if (this.parsedJSON.chart.animation == true){
+            _columnChart.animateColumn(this._columns[i]);
+        }
+
     }
 }
 

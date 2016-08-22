@@ -69,8 +69,9 @@ Engine.prototype.lineChart = function() {
 
         _lineChart = new LineChart(this._drawComponents[i], this.parsedJSON, i);
         paths[i] = _lineChart.path();
-        this._anchors[i] = _lineChart.anchor();
         this._crossHair[i] = _lineChart.crossHair();
+        this._anchors[i] = _lineChart.anchor();
+
         point0.x = 0;
         point0.y = 0;
         this._tooltips[i] = tooltip(this._drawComponents[i], point0, "tooltip", "tooltipText");

@@ -1,141 +1,146 @@
 /*-----------Line Chart--------------*/
 function LineChart(drawComponents, parsedJSON, index) {
-    this.index = index;
-    Chart.call(this, drawComponents, parsedJSON);
-    if (parsedJSON.chart.xAxisType == 'date')
-        this.xDiff = this.parsedJSON.TickList.xAxis[this.parsedJSON.TickList.xAxis.length - 1].getTime() - this.parsedJSON.TickList.xAxis[0].getTime();
-    this.yDiff = this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[index].length - 1] - this.parsedJSON.TickList.yAxis[this.index][0];
+    this.index = index;                                 /*no. of chart*/
+    Chart.call(this, drawComponents, parsedJSON);       /*inherite chart class*/
+    if (parsedJSON.chart.xAxisType == 'date')           /*check if the X axis type date or not*/
+        this.xDiff = this.parsedJSON.TickList.xAxis[this.parsedJSON.TickList.xAxis.length - 1].getTime() - this.parsedJSON.TickList.xAxis[0].getTime();         /*
+                                                                        calculate difference between max X axis time tick and min X axis time tick*/
+    this.yDiff = this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[index].length - 1] - this.parsedJSON.TickList.yAxis[this.index][0];  /*
+                                                                        calculate difference between max Y axis tick and min Y axis tick*/
 }
 
 LineChart.prototype = Object.create(Chart.prototype);
 LineChart.prototype.constructor = LineChart;
 
-LineChart.prototype.path = function() {
-    var x, y;
-    var point = {};
-    var path;
-    var pathPointString;
-    var pathPoints = [];
-    var marginX = this.parsedJSON.chart.marginX;
-    var width = this.parsedJSON.chart.width;
-    var xAxisTickList = this.parsedJSON.TickList.xAxis;
-    var height = this.parsedJSON.chart.height;
-    var marginY = this.parsedJSON.chart.marginY;
-    var topMarginY = this.parsedJSON.chart.topMarginY;
-    var interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
-    var midY = (height - marginY + topMarginY) / 2;
+LineChart.prototype.path = function() { /*Draw the graph*/
+    var x, y,                           /*Raw value of (x,y) from parsed json to plot*/
+        point = {},                     /*blank object for initializing converted (x,y)*/
+        path,                           /*for storing draw Path return value*/
+        pathPointString,                /*for storing path string*/
+        pathPoints = [],                /*for actual points to draw path after animation of line graph*/
+        xAxisTickList = this.parsedJSON.TickList.xAxis,     /*ticklists of X axis*/
+        width = this.parsedJSON.chart.width,                /*width of each chart*/
+        height = this.parsedJSON.chart.height,              /*height of each chart*/
+        marginX = this.parsedJSON.chart.marginX,            /*store margin value of X axis*/ 
+        marginY = this.parsedJSON.chart.marginY,            /*store margin value of Y axis*/
+        topMarginY = this.parsedJSON.chart.topMarginY,      /*store top margin value of Y axis*/
+        interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1),   /*calculate interval for ordinal axis*/
+        midY = 0;                                           /*calculate minimum Y coordinate when raw Y value is greater than equal to 0*/
+
     pathPointString = 'M';
     for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {
-        x = this.parsedJSON.data[this.index][i][0];
-        y = this.parsedJSON.data[this.index][i][1];
-        if (this.parsedJSON.chart.xAxisType == 'date')
-            point.x = this.drawComponents.xShift(x, this.parsedJSON.TickList.xAxis[0], this.xDiff);
+        x = this.parsedJSON.data[this.index][i][0];         /*Raw x value of (x,y) from parsed json to plot*/
+        y = this.parsedJSON.data[this.index][i][1];         /*Raw y value of (x,y) from parsed json to plot*/
+        if (this.parsedJSON.chart.xAxisType == 'date')      /*check date axis or not*/
+            point.x = this.drawComponents.xShift(x, this.parsedJSON.TickList.xAxis[0], this.xDiff);     /*calculate X coordinate plotpoint based on date axis*/
         else
-            point.x = xAxisTickList.indexOf(x) * interval;
-        point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
-        point = this.drawComponents.coordinate(point.x, point.y);
-        pathPointString = pathPointString + point.x + ' ' + point.y + ', ';
+            point.x = xAxisTickList.indexOf(x) * interval;  /*calculate X coordinate plotpoint based on ordinal X axis*/
+        point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);     /*calculate Y coordinate plotpoint*/
+        point = this.drawComponents.coordinate(point.x, point.y);   /*convert (x,y) coordinate based on chart coordinate*/
+        pathPointString = pathPointString + point.x + ' ' + point.y + ', ';     /*append (x,y) coordinate in the end of path string*/
         pathPoints[i] = {};
-        pathPoints[i].x = point.x;        
-        pathPoints[i].y = point.y;
+        pathPoints[i].x = point.x;      /*initialize x coordinate*/
+        pathPoints[i].y = point.y;      /*initialize y coordinate*/
+        if (y >= 0) {                   /*check raw y value greater than equal to zero or not*/
+            if (midY < point.y)
+                midY = point.y;         /*find min y coordiante value while raw y value greater than eqaul to zero*/
+        }
     }
-    if (this.parsedJSON.chart.animation == true) {
+    if (this.parsedJSON.chart.animation == true) {      /*check animation attribute is true or not*/
         pathPointString = "M";
-        pathPointString = pathPointString + pathPoints[0].x + ' ' + midY + ', ' + pathPoints[pathPoints.length - 1].x + ' ' + midY;
+        pathPointString = pathPointString + pathPoints[0].x + ' ' + midY + ', ' + pathPoints[pathPoints.length - 1].x + ' ' + midY;     /*set path string between min and max x coordinate and min y coordinate value*/
     }
-    path = this.drawComponents.drawPath(pathPointString, "path", pathPoints, midY);
+    path = this.drawComponents.drawPath(pathPointString, "path", pathPoints, midY);     /*draw path based on the path string*/
 
-    return path;
+    return path;    /*return path*/
 }
 
-LineChart.prototype.animatePath = function(path,anchors) {
-    var finalPoints,
-        x1,
-        x2,
-        step = 100,
-        incrementY = [],
-        midY,
-        immdiatePoints = [],
-        pathString,
-        flagIntervalStop;
+LineChart.prototype.animatePath = function(path, anchors) {
+    var finalPoints,            /*for final points of path after animation*/
+        step = 100,             /*initialize step value*/
+        incrementY = [],        /*increment value of Y coordinate*/
+        midY,                   /*mid value of Y coordinate from which y coordinate animation start*/
+        immdiatePoints = [],    /*current (x,y) coordinates of path*/
+        pathString,             /*path string*/
+        flagIntervalStop;       /*flag for interval event stop*/
 
-    midY = path.config.y;
-    finalPoints = path.config.finalPoints;
+    midY = path.config.y;       /*initialize by y coordinate before animation*/
+    finalPoints = path.config.finalPoints;  /*initialize final points*/
 
-    for (var i = 0, len = finalPoints.length; i < len; i++) {
+    for (var i = 0, len = finalPoints.length; i < len; i++) {   /*iterate on list of final points*/
         immdiatePoints[i] = {};
-        immdiatePoints[i].x = finalPoints[i].x;
-        immdiatePoints[i].y = midY;
-        incrementY[i] = (finalPoints[i].y - midY) / step;
+        immdiatePoints[i].x = finalPoints[i].x;             /*initialize by x coordinate of final points of index i*/
+        immdiatePoints[i].y = midY;                         /*initialize by y coordinate of final points of index i*/
+        incrementY[i] = (finalPoints[i].y - midY) / step;   /*calculate increment value for y coordinate of final points of index i*/
     }
 
-    var refreshIntervalId = setInterval(function() {
+    var refreshIntervalId = setInterval(function() {        /*set time interval to increment Y coordinate in a specific time interval*/
         pathString = "M";
-        flagIntervalStop=1;
-        for (var i = 0, len = finalPoints.length; i < len; i++) {
-            if (midY < finalPoints[i].y && immdiatePoints[i].y <= finalPoints[i].y){
-                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];
-                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
-                flagIntervalStop=0;
-            }else if (midY > finalPoints[i].y && immdiatePoints[i].y >= finalPoints[i].y){
-                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];
-                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
-                flagIntervalStop=0;
-            }else 
-                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";
-        }   
-        if(flagIntervalStop==1){
-            clearInterval(refreshIntervalId);  
-            for(var i=0, len=anchors.length; i<len; i++){   
-                setTimeout(function(){ 
-                    anchors[this].graphics.setAttribute("visibility", "visible");
-                }.bind(i), Math.random()*500);                              
+        flagIntervalStop = 1;
+        for (var i = 0, len = finalPoints.length; i < len; i++) {   /*iterate on list of final points for increment y coordinate in every interval*/
+            if (midY < finalPoints[i].y && immdiatePoints[i].y <= finalPoints[i].y) {               /*check if midY less than equal to final point of index i && check if current y coordinate exits limit(y coordinate of final point of index i) or not*/
+                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];                          /*increment y coordinate by increment value with current points*/
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";    /*append (x,y) coordinate in the end of path string*/
+                flagIntervalStop = 0;                                                               /*set flag interval zero*/
+            } else if (midY > finalPoints[i].y && immdiatePoints[i].y >= finalPoints[i].y) {        /*check if midY greater than equal to final point of index i && check if current y coordinate exits limit(y coordinate of final point of index i) or not*/     
+                immdiatePoints[i].y = immdiatePoints[i].y + incrementY[i];                          /*increment y coordinate by increment value with current points*/
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";    /*append (x,y) coordinate in the end of path string*/
+                flagIntervalStop = 0;                                                               /*set flag interval zero*/
+            } else
+                pathString = pathString + immdiatePoints[i].x + " " + immdiatePoints[i].y + ",";    /*append (x,y) coordinate in the end of path string*/
+        }
+        if (flagIntervalStop == 1) {                                            /*check flag interval one or not; it will decide if the set interval is needed to stop or not*/
+            clearInterval(refreshIntervalId);                                   /*stop set interval*/
+            for (var i = 0, len = anchors.length; i < len; i++) {
+                anchors[i].graphics.setAttribute("visibility", "visible");      /*set visibility visible to anchor of index i of current chart*/
             }
+        } else {                                                                /*if flag interval is zero*/
+            path.graphics.setAttribute("d", pathString);                        /*set attribute of path to new intermidiate path string of animation process*/
         }
-        else{
-            path.graphics.setAttribute("d", pathString);           
-        }
-    }, 15);
+    }, 15);                                                                     /*set interval time at 15 milli Sec*/
 }
 
 LineChart.prototype.anchor = function() {
-    var x, y;
-    var point = {};    
-    var svgLeft, svgTop;
-    var interval;
-    var marginX = this.parsedJSON.chart.marginX;
-    var width = this.parsedJSON.chart.width;
-    var xAxisTickList = this.parsedJSON.TickList.xAxis;
-    interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);
-    this.anchor = [];
-    svgLeft = parseInt(this.drawComponents.svg.getBoundingClientRect().left);
-    svgTop = parseInt(this.drawComponents.svg.getBoundingClientRect().top);
-    for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {
-        x = this.parsedJSON.data[this.index][i][0];
-        if (this.parsedJSON.chart.xAxisType == 'date') {
-            point.x = this.drawComponents.xShift(x, xAxisTickList[0], this.xDiff);
-        } else
-            point.x = xAxisTickList.indexOf(x) * interval;
-        y = this.parsedJSON.data[this.index][i][1];
-        point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
-        point = this.drawComponents.coordinate(point.x, point.y);
+    var x, y,                                               /*Raw value of (x,y) from parsed json to plot*/
+        point = {},                                         /*blank object for initializing converted (x,y)*/
+        svgLeft, svgTop,                                    /*left x coordinate and top y coordinate of svg canvas*/
+        interval,                                           /*interval for ordinal axis*/
+        marginX = this.parsedJSON.chart.marginX,            /*store margin value of X axis*/ 
+        width = this.parsedJSON.chart.width,                /*width of each chart*/
+        xAxisTickList = this.parsedJSON.TickList.xAxis;     /*ticklists of X axis*/
 
-        this.anchor[i] = this.drawComponents.drawCircle(point, 5, "plotPoint", x, y, (svgLeft + point.x), (svgTop + point.y));
-        if (this.parsedJSON.chart.animation == true) {
-            this.anchor[i].graphics.setAttribute("visibility", "hidden");
+    interval = (width) / (this.parsedJSON.TickList.xAxis.length - 1);   /*calculate interval for ordinal axis*/
+    this.anchor = [];                                                   /*initialize with blank array*/
+    svgLeft = parseInt(this.drawComponents.svg.getBoundingClientRect().left);   /*left x coordinate of svg canvas*/
+    svgTop = parseInt(this.drawComponents.svg.getBoundingClientRect().top);     /*top y coordinate of svg canvas*/
+    for (var i = 0; i < this.parsedJSON.data[this.index].length; i++) {         /*iterate on parsed json data*/
+        x = this.parsedJSON.data[this.index][i][0];                             /*initialized by raw x data*/
+        if (this.parsedJSON.chart.xAxisType == 'date') {                        /*check X axis date or ordinal*/
+            point.x = this.drawComponents.xShift(x, xAxisTickList[0], this.xDiff);  /*calculate X coordinate plotpoint based on date axis*/
+        } else                                                                      /*if X axis is ordinal*/
+            point.x = xAxisTickList.indexOf(x) * interval;                          /*calculate X coordinate plotpoint based on ordinal X axis*/
+        y = this.parsedJSON.data[this.index][i][1];                                 /*initialized by raw y data*/
+        point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);     /*calculate Y coordinate plotpoint*/
+        point = this.drawComponents.coordinate(point.x, point.y);   /*convert (x,y) coordinate based on chart coordinate*/
+
+        this.anchor[i] = this.drawComponents.drawCircle(point, 5, "plotPoint", x, y, (svgLeft + point.x), (svgTop + point.y));  /*anchors list of index i initialized by return value of drawCircle function*/
+        if (this.parsedJSON.chart.animation == true) {      /*check animation attribute is true or not*/
+            this.anchor[i].graphics.setAttribute("visibility", "hidden");   /*set anchor of index i visibility attribute visible*/
         }
     }
-    return this.anchor;
+    return this.anchor;     /*return anchor list*/
 }
 
 LineChart.prototype.chartArea = function() {
-    var point = {};
-    var point1 = {};
-    var x, y, h, w;
-    var _chartArea;
-    var left;
-    x = 0;
-    y = this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[this.index].length - 1];
+    var point = {},     /*blank object for initializing converted (x,y)*/
+        point1 = {},    /*blank object for initializing converted (x,y)*/
+        x,y,            /*(x,y) coordinate*/
+        h,              /*height*/
+        w,              /*width*/
+        left,           /*left coodinate*/
+        _chartArea;     /*for storing return value of rect (chart area)*/
+    x = 0;              
+    y = this.parsedJSON.TickList.yAxis[this.index][this.parsedJSON.TickList.yAxis[this.index].length - 1];  
 
     point.x = x;
     point.y = this.drawComponents.yShift(y, this.parsedJSON.TickList.yAxis[this.index][0], this.yDiff);
@@ -154,8 +159,7 @@ LineChart.prototype.chartArea = function() {
     });
     return _chartArea;
 }
-
-LineChart.prototype.hairLine = function() {
+    LineChart.prototype.hairLine = function() {
     var point = {};
     var point1 = {};
     var x, y, h, w;
@@ -261,8 +265,8 @@ LineChart.prototype.syncCrossHair = function(anchors, crossHairs, toolTips, adju
                 toolTips[i].rect.graphics.setAttribute("x", posToolTips.pointX);
                 toolTips[i].rect.graphics.setAttribute("y", posToolTips.pointY - 10);
 
-                toolTips[i].text.graphics.setAttribute("x", (posToolTips.pointX + Math.floor((tooltipWidth - (textLength * padding)) / 2)));
-                toolTips[i].text.graphics.setAttribute("y", (posToolTips.pointY + 7));
+                toolTips[i].text.graphics.setAttribute("x", (posToolTips.pointX + tooltipWidth/2));
+                toolTips[i].text.graphics.setAttribute("y", (posToolTips.pointY + tooltipHeight/2));
 
                 toolTips[i].rect.graphics.setAttribute("visibility", "visible");
                 toolTips[i].text.graphics.setAttribute("visibility", "visible");
@@ -309,11 +313,11 @@ LineChart.prototype.syncCrossHair = function(anchors, crossHairs, toolTips, adju
                         toolTips[i].rect.config.x = posToolTips.pointX;
                         toolTips[i].rect.config.y = posToolTips.pointY;
 
-                        toolTips[i].text.graphics.setAttribute("x", (posToolTips.pointX + Math.floor((tooltipWidth - (textLength * padding)) / 2)));
-                        toolTips[i].text.graphics.setAttribute("y", (posToolTips.pointY + 7));
+                        toolTips[i].text.graphics.setAttribute("x", (posToolTips.pointX + tooltipWidth/2));
+                        toolTips[i].text.graphics.setAttribute("y", (posToolTips.pointY + tooltipHeight/2));
 
                         toolTips[i].text.config.x = (posToolTips.pointX + Math.floor((tooltipWidth - (textLength * padding)) / 2));
-                        toolTips[i].text.config.y = (posToolTips.pointY + 7);
+                        toolTips[i].text.config.y = (posToolTips.pointY + tooltipHeight/2);
 
                         toolTips[i].rect.graphics.setAttribute("visibility", "visible");
                         toolTips[i].text.graphics.setAttribute("visibility", "visible");

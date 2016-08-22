@@ -49,9 +49,9 @@ function placeTooltip(limits, left, top, toolTipSize) {
     tooltipWidth = toolTipSize.tooltipWidth;
     tooltipHeight = toolTipSize.tooltipHeight;
 
-    if ((rightLimit - 25) < (left + tooltipWidth)) {
+    if ((rightLimit - 10) < (left + tooltipWidth)) {
 
-        pointX = left - tooltipWidth - 10;
+        pointX = left - tooltipWidth - 5;
     }
 
     if ((top + tooltipHeight + 5) > (bottomLimit)) {
@@ -63,7 +63,7 @@ function placeTooltip(limits, left, top, toolTipSize) {
 
     if ((top) < (topLimit + 5)) {
         pointY = top;
-        while (pointY <= topLimit + 15) {
+        while (pointY <= topLimit + 5) {
             pointY++;
         }
     }
@@ -75,7 +75,7 @@ function placeTooltip(limits, left, top, toolTipSize) {
 }
 
 function numberShrink(num) {
-    var tickText;
+    var tickText=num;
     if (Math.abs(num) >= 1000 && Math.abs(num) < 1000000) {
         tickText = num / 1000 + "" + "K";
     }

@@ -11,7 +11,7 @@
         "minLossColor": "#E57373",
         "numberprefix": "$",
         "animation" : true,
-        "xAxisMap": "region"
+        "xAxisMap": "sub_category"
     },
     "data": [{
         "category": "Coffee",

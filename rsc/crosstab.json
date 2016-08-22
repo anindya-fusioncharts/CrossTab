@@ -1,6 +1,6 @@
 {
     "chart": {
-        "type": "line",
+        "type": "crosstab",
         "titles": "Sum of Sales",
         "tab_titles": "region",
         "category_name": "Product Type",
